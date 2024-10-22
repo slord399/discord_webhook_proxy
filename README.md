@@ -59,7 +59,7 @@ pm2 save.
    You should be good to go! 
    Future updates just require a simple 
 ```
-yarn update.
+yarn update
 ```
 
 ## The Correct Setup
@@ -133,7 +133,8 @@ Run
 ```
 pm2 save
 ```
- as well if necessary.
+as well if necessary.
+
 7.  You should be good to go! Try adding /queue onto your webhook requests!
 
 With the newer updates of the proxy, you can now just run yarn update and, as long as you have the setup as described in this guide, it will automatically update the proxy for you. If a yarn update fails, try running it again. It could be that I updated the script.
