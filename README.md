@@ -37,25 +37,41 @@ to clone the proxy.
 cp config.example.json config.json
 ```
 9.  Modify the files as you need, primarily config.json.
-10.  Run yarn && yarn build. This will install the necessary dependencies and build the project.
-11.  Run
+10.  Run
+```
+yarn && yarn build
+```
+This will install the necessary dependencies and build the project.
+
+12.  Run
 ```
 pm2 start dist/index.js --name=webhook-proxy
 ```
  This will start the app under the name webhook-proxy in pm2.
-     If you wish to run this on startup, run pm2 startup, follow the instructions there, and then run
+     If you wish to run this on startup, run 
+```
+pm2 startup
+```
+follow the instructions there, and then run
 ```
 pm2 save.
 ```
-   You should be good to go! Future updates just require a simple yarn update.
+   You should be good to go! 
+   Future updates just require a simple 
+```
+yarn update.
+```
 
 ## The Correct Setup
 
 This setup involves using a reverse proxy instead of exposing the server directly and using a cluster instead of a single process. This is recommended (and the correct way), but a bit more complicated. This is how I actually run the proxy. This is how I used to run the proxy. I’m now using Cloudflare Tunnel, however this is still the recommended way of doing things that keeps it simple.
 
 1.  Install nginx. This will be our front-facing web server.
-2.  Update your configuration and set trustProxy to true.
-3.  Create a new site in nginx with the following configuration:
+```
+sudo apt install nginx
+```
+3.  Update your configuration and set trustProxy to true.
+4.  Create a new site in nginx with the following configuration:
 ```
 server {
     listen 80;
@@ -92,12 +108,12 @@ run pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-
 ```
 This will run it in a clustered mode instead of the standard fork mode.
         From here, you can now scale the proxy up and down as you need to by doing 
-        ```
-        pm2 scale webhook-proxy <worker count>
-        ```
-        This is good for games that are growing that need to send a lot of webhook requests as you can just put on more workers as needed.
-        Please note that the benefits of clustering come from having multiple CPU cores. 
-        If you do not have more than one core on your server, this will not benefit you and will most likely reduce performance from the overhead of clustering and the workers fighting each other for resources.
+ ```
+pm2 scale webhook-proxy <worker count>
+ ```
+This is good for games that are growing that need to send a lot of webhook requests as you can just put on more workers as needed.
+Please note that the benefits of clustering come from having multiple CPU cores. 
+If you do not have more than one core on your server, this will not benefit you and will most likely reduce performance from the overhead of clustering and the workers fighting each other for resources.
 
 ## Enabling Queues
 
@@ -106,11 +122,11 @@ A new feature of the proxy is the queue system. This requires some extra (but si
 1.  Install RabbitMQ 16.
 2.  Edit your configuration to enable queues, and point to your RabbitMQ installation (it should just be the default value that I’ve provided, but in case you’ve changed anything you can set it here).
 3.   Restart the proxy
-   ```
+```
 pm2 restart webhook-proxy
 ```
 5.  Start the queue processor with
-   ```
+```
 pm2 start pm2 start dist/queueProcessor.js --name=webhook-proxy-processor
 ```
 Run
