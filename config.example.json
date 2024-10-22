@@ -4,7 +4,7 @@
     "autoBlock": false,
     "queue": {
         "enabled": false,
-        "rabbitmq": "amqp://localhost",
+        "rabbitmq": "amqp://guest:guest@localhost",
         "queue": "webhook-proxy"
     },
     "redis": "redis://127.0.0.1/0",
