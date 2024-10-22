@@ -8,7 +8,7 @@ import beforeShutdown from './beforeShutdown';
 import { error, log, warn } from './log';
 import { setup } from './rmq';
 
-const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
+const config = JSON.parse(fs.readFileSync('/root/discord_webhook_proxy_original/config.json', 'utf8')) as {
     port: number;
     queue: {
         enabled: boolean;
