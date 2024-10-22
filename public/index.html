@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" data-color-mode="dark" data-dark-theme="dark">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>WebhookProxy</title>
+        <title>WebhookRelay</title>
 
-        <meta property="og:title" content="WebhookProxy" />
-        <meta property="og:url" content="https://webhook.lewisakura.moe/" />
-        <meta property="og:description" content="A Discord webhook proxy, primarily for Roblox games." />
-        <meta property="og:image" content="https://webhook.lewisakura.moe/img/logo.png" />
 
         <meta name="theme-color" content="#5865f2" />
 
@@ -50,60 +41,24 @@
             </div>
         </div>
         <div class="px-4 py-5 my-5 text-center">
-            <img class="d-block mx-auto mb-4" src="/img/logo.svg" width="256" />
-            <h1 class="display-5 fw-bold">WebhookProxy</h1>
+            
+            <h1 class="display-5 fw-bold">WebhookRelay</h1>
             <div class="col-lg-6 mx-auto">
-                <p class="lead mb-4">A Discord webhook proxy, primarily for Roblox games.</p>
+                <p class="lead mb-4">A Discord webhook relay, primarily for IFTTT.</p>
             </div>
-            <withscript>
-                <div class="container my-2 w-50">
-                    <div class="d-flex gap-2 justify-content-center">
-                        <input type="textbox" class="form-control" id="webhookUrl" placeholder="Webhook URL" />
-                        <div class="d-flex align-items-center justify-content-center">
-                            <i class="fas fa-long-arrow-alt-right fa-2x"></i>
-                        </div>
-                        <input
-                            type="textbox"
-                            class="form-control"
-                            id="webhookUrlOutput"
-                            placeholder="Output..."
-                            readonly
-                        />
-                    </div>
-                </div>
-            </withscript>
-            <div class="d-flex gap-2 justify-content-center">
-                <withscript>
-                    <button
-                        type="button"
-                        data-bs-toggle="modal"
-                        data-bs-target="#getStarted"
-                        class="btn btn-primary btn-lg px-4"
-                    >
-                        Get started!
-                    </button>
-                </withscript>
-                <a
-                    href="https://devforum.roblox.com/t/discord-webhook-proxy/1491725"
-                    class="btn btn-secondary btn-lg px-4"
-                    >DevForum <i class="fas fa-external-link-alt"></i
-                ></a>
-            </div>
-        </div>
+
+
+         
 
         <main class="container">
-            <h2>Why use WebhookProxy?</h2>
+            <h2>Why use WebhookRelay?</h2>
             <div class="row g-4 py-5 pb-1 row-cols-2 row-cols-lg-3 justify-content-center">
                 <div class="feature col">
                     <div class="feature-icon bg-primary">
                         <i class="fas fa-wrench"></i>
                     </div>
                     <h3>Easy to Integrate</h3>
-                    <p>
-                        Simply replace <code>discord.com</code> with
-                        <code class="hostname">webhook.lewisakura.moe</code> in your webhook URL when sending.
-                        That's it.
-                    </p>
+                    
                 </div>
                 <div class="feature col">
                     <div class="feature-icon bg-primary">
@@ -144,10 +99,10 @@
                     </div>
                     <h3>Optional Ratelimit Handling</h3>
                     <p>
-                        Using <code>POST /api/webhooks/:id/:token/queue</code>, you can optionally stop writing
+                        Using <code>POST /api/webhooks/channel_id/discord_token/queue</code>, you can optionally stop writing
                         ratelimit code by hand over and over. With a highly generous soft ratelimit of 10/1s, your
                         messages are guaranteed to be sent no matter what, even if you go over Discord's ratelimit.
-                        We'll handle it.
+                        We'll handle it. Just add /queue end of webhook URL.
                     </p>
                 </div>
             </div>
@@ -173,49 +128,9 @@
             </div>
         </main>
 
-        <footer class="footer">
-            <div class="container d-flex justify-content-between">
-                <div>
-                    A thing by <a href="https://lewisakura.moe/">lewisakura</a>.
-                    <span class="d-none d-lg-inline">Running version <code id="version">unknown</code>.</span>
-                </div>
 
-                <!-- This report button is primarily for the public instance. -->
-                <div>
-                    <span class="d-none d-md-inline px-2">Is someone abusing the proxy?</span>
-                    <a
-                        href="https://devforum.roblox.com/new-message?username=lewisakura&title=WebhookProxy%20Abuse%20Report&body=Please%20describe%20your%20abuse%20report%20in%20full.%20Include%20Discord%20webhook%20links/IDs%20when%20possible%20and%20show%20the%20abusive%20behaviour."
-                        class="btn btn-danger btn-xs"
-                        >Report abuse <i class="fas fa-external-link-alt"></i
-                    ></a>
-                </div>
-            </div>
-        </footer>
 
-        <a
-            href="https://github.com/lewisakura/webhook-proxy"
-            class="github-corner"
-            aria-label="View source on GitHub"
-            ><svg
-                width="80"
-                height="80"
-                viewBox="0 0 250 250"
-                style="fill: #fff; color: #151513; position: absolute; top: 0; border: 0; right: 0"
-                aria-hidden="true"
-            >
-                <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-                <path
-                    d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
-                    fill="currentColor"
-                    style="transform-origin: 130px 106px"
-                    class="octo-arm"
-                ></path>
-                <path
-                    d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
-                    fill="currentColor"
-                    class="octo-body"
-                ></path></svg></a
-        ><style>
+        <style>
             .github-corner:hover .octo-arm {
                 animation: octocat-wave 560ms ease-in-out;
             }
@@ -243,103 +158,8 @@
             }
         </style>
 
-        <div class="modal fade" id="getStarted" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Getting Started</h5>
-                        <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>You're probably starting with some code like this:</p>
-                        <pre><code class="language-lua">local httpService = game:GetService("HttpService")
+        
 
-httpService:PostAsync("https://discord.com/api/webhooks/{WEBHOOK_ID}/{WEBHOOK_TOKEN}",
-	httpService:JSONEncode({
-		content = "Hello, world!"
-	})
-)</code></pre>
-                        <p>
-                            It's very simple to convert this over to WebhookProxy. Just swap out
-                            <code>discord.com</code> with <code class="hostname">webhook.lewisakura.dev</code>.
-                        </p>
-                        <pre><code class="language-lua">local httpService = game:GetService("HttpService")
-
-httpService:PostAsync("https://<span class="hostname">webhook.lewisakura.dev</span>/api/webhooks/{WEBHOOK_ID}/{WEBHOOK_TOKEN}",
-	httpService:JSONEncode({
-		content = "Hello, world!"
-	})
-)</code></pre>
-                        <p>And in no time at all, your webhooks are back to functioning!</p>
-
-                        <p>If you're sending many requests a second, consider switching to the queue system:</p>
-                        <pre><code class="language-lua">local httpService = game:GetService("HttpService")
-
-httpService:PostAsync("https://<span class="hostname">webhook.lewisakura.dev</span>/api/webhooks/{WEBHOOK_ID}/{WEBHOOK_TOKEN}/queue",
-	httpService:JSONEncode({
-		content = "Hello, world!"
-	})
-)</code></pre>
-                        <p>This will make sure all of your messages hit Discord at some point, no matter what!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            const discordWebhookUrlRegex =
-                /https:\/\/(?:(?:canary|ptb|www)\.)?discord\.com\/api\/webhooks\/(\d+)\/([a-zA-Z0-9-_]+)\/?/i;
-
-            if (window.location.protocol === 'http:') {
-                document.getElementById('httpWarning').style.display = 'block';
-            }
-
-            for (const element of document.getElementsByClassName('hostname')) element.innerText = window.location.host;
-
-            const output = document.getElementById('webhookUrlOutput');
-            document.getElementById('webhookUrl').oninput = ({ target: { value } }) => {
-                const parts = discordWebhookUrlRegex.exec(value);
-                if (parts) {
-                    const id = parts[1];
-                    const token = parts[2];
-
-                    output.value = `https://${window.location.host}/api/webhooks/${id}/${token}`;
-                } else {
-                    output.value = '';
-                }
-            };
-
-            const CountUp = countUp.CountUp;
-
-            const webhooks = new CountUp('webhooks');
-            const requests = new CountUp('requests');
-            const announcement = document.getElementById('announcement');
-
-            async function getStats() {
-                const stats = await fetch('/stats').then(res => res.json());
-                webhooks.update(stats.webhooks);
-                requests.update(stats.requests);
-                document.getElementById('version').textContent = stats.version;
-            }
-
-            async function getAnnouncement() {
-                const announcementData = await fetch('/announcement').then(res => res.json());
-                if (announcementData.message) {
-                    const alertWrapper = announcement.getElementsByClassName('alert')[0];
-                    alertWrapper.classList.add('alert-' + announcementData.style);
-
-                    alertWrapper.getElementsByClassName('alert-heading')[0].textContent = announcementData.title;
-                    alertWrapper.getElementsByTagName('p')[0].textContent = announcementData.message;
-
-                    announcement.style = '';
-                }
-            }
-
-            getAnnouncement();
-            getStats();
-            setInterval(getStats, 5000);
-        </script>
+        
     </body>
 </html>
