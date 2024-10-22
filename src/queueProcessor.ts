@@ -41,7 +41,7 @@ async function run() {
     }
 
     log('Consuming.');
-    await rabbitMq.prefetch(100);
+    await rabbitMq.prefetch(10);
     await rabbitMq.consume(
         config.queue.queue,
         async msg => {
