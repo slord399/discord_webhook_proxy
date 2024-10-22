@@ -27,7 +27,7 @@ npm i -g pm2 yarn
 ```
 6.  Run
 ```
-git clone https://github.com/LewisTehMinerz/webhook-proxy
+git clone https://github.com/slord399/discord_webhook_proxy_original
 ```
 to clone the proxy.
 
@@ -45,7 +45,7 @@ This will install the necessary dependencies and build the project.
 
 12.  Run
 ```
-pm2 start dist/index.js --name=webhook-proxy
+pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy
 ```
  This will start the app under the name webhook-proxy in pm2.
      If you wish to run this on startup, run 
@@ -85,7 +85,7 @@ server {
         proxy_set_header Host $http_host;
         proxy_set_header X-NginX-Proxy true;
 
-        proxy_pass http://127.0.0.1:<port>;
+        proxy_pass http://127.0.0.1:8080;
         proxy_redirect off;
     }
 }
@@ -127,7 +127,7 @@ pm2 restart webhook-proxy
 ```
 5.  Start the queue processor with
 ```
-pm2 start pm2 start dist/queueProcessor.js --name=webhook-proxy-processor
+pm2 start pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor
 ```
 Run
 ```
