@@ -127,7 +127,7 @@ pm2 restart webhook-proxy
 ```
 5.  Start the queue processor with
 ```
-pm2 start pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor
+pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor
 ```
 Run
 ```
@@ -138,3 +138,52 @@ as well if necessary.
 7.  You should be good to go! Try adding /queue onto your webhook requests!
 
 With the newer updates of the proxy, you can now just run yarn update and, as long as you have the setup as described in this guide, it will automatically update the proxy for you. If a yarn update fails, try running it again. It could be that I updated the script.
+
+## Usefult Note
+###Reload/Restart
+```
+service nginx reload
+```
+```
+service rabbitmq-server restart
+```
+```
+pm2 restart webhook-proxy
+```
+
+### Nginx related
+```
+/etc/nginx/nginx.conf
+```
+```
+/etc/nginx/sites-enabled/default
+```
+
+
+### RabbitMQ related
+* https://www.rabbitmq.com/docs/configure
+* https://www.rabbitmq.com/docs/relocate
+* https://www.rabbitmq.com/docs/logging
+* https://www.rabbitmq.com/docs/networking
+  
+```
+/etc/rabbitmq/rabbitmq.conf
+```
+```
+/var/log/rabbitmq/rabbit.log
+```
+
+### PM2 related
+```
+pm2 logs
+```
+
+### Grafana Monitoring (https://www.rabbitmq.com/docs/prometheus)
+```
+cd rabbitmq-server/deps/rabbitmq_prometheus/docker
+docker-compose -f docker-compose-metrics.yml up -d
+docker-compose -f docker-compose-overview.yml up -d
+```
+
+
+
