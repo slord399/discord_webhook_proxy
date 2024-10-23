@@ -158,6 +158,9 @@ pm2 restart webhook-proxy
 ```
 /etc/nginx/sites-enabled/default
 ```
+```
+nginx -t
+```
 
 
 ### RabbitMQ related
