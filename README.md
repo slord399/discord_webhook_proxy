@@ -96,10 +96,19 @@ server {
 ```
 pm2 restart webhook-proxy
 ```
-You should be good to go.
+5. You should be good to go.
+```
+/
+/
+/
+```
 
-6.  (Optional) Depending on your load requirements, you may want to cluster WebhookProxy to deal with a large amount of servers.
+6.  (Optional)
+
+Depending on your load requirements, you may want to cluster WebhookProxy to deal with a large amount of servers.
+
 If you have >50 servers sending webhook requests frequently, you may need to scale.
+
 *Due to implementation, Publishers metrics shown on prometheus become negative value unintentionallly which is wrong.
 
 To do so, run
@@ -116,10 +125,12 @@ This will run it in a clustered mode instead of the standard fork mode.
 pm2 scale webhook-proxy <worker count>
  ```
 This is good for games that are growing that need to send a lot of webhook requests as you can just put on more workers as needed.
+
 Please note that the benefits of clustering come from having multiple CPU cores. 
+
 If you do not have more than one core on your server, this will not benefit you and will most likely reduce performance from the overhead of clustering and the workers fighting each other for resources.
 
-7.(Optional)Update to Date the system
+7.(Optional)Update the base system
 ```
 apt update && apt upgrade && apt dist-upgrade
 ```
