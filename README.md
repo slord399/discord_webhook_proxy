@@ -115,6 +115,14 @@ This is good for games that are growing that need to send a lot of webhook reque
 Please note that the benefits of clustering come from having multiple CPU cores. 
 If you do not have more than one core on your server, this will not benefit you and will most likely reduce performance from the overhead of clustering and the workers fighting each other for resources.
 
+7.(Optional)Update to Date the system
+```
+apt update && apt upgrade && apt dist-upgrade
+```
+```
+npm install pm2 -g && pm2 update && pm2 unstartup && nvm install node && npm install -g npm && pm2 startup
+```
+
 ## Enabling Queues
 
 A new feature of the proxy is the queue system. This requires some extra (but simple) setup.
