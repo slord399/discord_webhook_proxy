@@ -102,9 +102,9 @@ You should be good to go.
    ```
 pm2 delete webhook-proxy
 ```
-and then 
+and then run
 ```
-run pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy -i 1
+pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy -i 1
 ```
 This will run it in a clustered mode instead of the standard fork mode.
         From here, you can now scale the proxy up and down as you need to by doing 
