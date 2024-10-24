@@ -148,7 +148,7 @@ service nginx reload
 service rabbitmq-server restart
 ```
 ```
-pm2 restart webhook-proxy
+pm2 restart webhook-proxy && pm2 restart webhook-proxy-processor && pm2 restart queueProcessor && pm2 save
 ```
 
 ### Nginx related
