@@ -191,7 +191,5 @@ docker-compose -f docker-compose-overview.yml up -d
 ## Rabbitmq queue bump up (Suspect of process freeze)
 Check pm2 logs for connection errors, if so,
 ```
-pm2 restart webhook-proxy
-pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor -f
-pm2 save
+pm2 restart webhook-proxy && pm2 restart webhook-proxy-processor && pm2 restart queueProcessor && pm2 save
 ```
