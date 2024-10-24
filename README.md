@@ -54,7 +54,7 @@ pm2 startup
 ```
 follow the instructions there, and then run
 ```
-pm2 save.
+pm2 save
 ```
    You should be good to go! 
    Future updates just require a simple 
@@ -119,7 +119,7 @@ If you do not have more than one core on your server, this will not benefit you 
 
 A new feature of the proxy is the queue system. This requires some extra (but simple) setup.
 
-1.  Install RabbitMQ 16.
+1.  Install RabbitMQ from [here](https://www.rabbitmq.com/docs/install-debian).
 2.  Edit your configuration to enable queues, and point to your RabbitMQ installation (it should just be the default value that I’ve provided, but in case you’ve changed anything you can set it here).
 3.   Restart the proxy
 ```
@@ -140,7 +140,7 @@ as well if necessary.
 With the newer updates of the proxy, you can now just run yarn update and, as long as you have the setup as described in this guide, it will automatically update the proxy for you. If a yarn update fails, try running it again. It could be that I updated the script.
 
 ## Usefult Note
-###Reload/Restart
+### Reload/Restart
 ```
 service nginx reload
 ```
@@ -182,6 +182,7 @@ pm2 logs
 ```
 
 ### Grafana Monitoring (https://www.rabbitmq.com/docs/prometheus)
+*If you want to change settings of grafana, you need to install standard grafana and remove grafana section from yml.
 ```
 docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-metrics.yml up -d
 docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-overview.yml up -d
