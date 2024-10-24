@@ -183,9 +183,8 @@ pm2 logs
 
 ### Grafana Monitoring (https://www.rabbitmq.com/docs/prometheus)
 ```
-cd rabbitmq-server/deps/rabbitmq_prometheus/docker
-docker-compose -f docker-compose-metrics.yml up -d
-docker-compose -f docker-compose-overview.yml up -d
+docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-metrics.yml up -d
+docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-overview.yml up -d
 ```
 
 ## Rabbitmq queue bump up (Suspect of process freeze)
