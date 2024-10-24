@@ -98,7 +98,11 @@ pm2 restart webhook-proxy
 ```
 You should be good to go.
 
-6.  (Optional) Depending on your load requirements, you may want to cluster WebhookProxy to deal with a large amount of Roblox servers. If you have >50 servers sending webhook requests frequently, you may need to scale. To do so, run
+6.  (Optional) Depending on your load requirements, you may want to cluster WebhookProxy to deal with a large amount of servers.
+If you have >50 servers sending webhook requests frequently, you may need to scale.
+*Due to implementation, Publishers metrics shown on prometheus become negative value unintentionallly which is wrong.
+
+To do so, run
    ```
 pm2 delete webhook-proxy
 ```
