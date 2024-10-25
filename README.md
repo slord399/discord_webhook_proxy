@@ -23,7 +23,7 @@ sudo apt install git
   
 
 3. Install Redis 29 or its Windows equivalent Memurai 10  
-   (Please note Memurai is paid software and you should probably just go put Redis in a Docker container instead on Windows, however for testing purposes Memurai will work fine).
+   (Please note Memurai is paid software and you should probably just go put Redis in a Docker container instead on Windows, however for testing purposes Memurai will work fine).  
    You need at least v6.2 due to the commands used, though v7 and above is preferable.
 ```
 sudo apt install redis
@@ -118,7 +118,7 @@ sudo apt install git
   
 
 4. Install Redis 29 or its Windows equivalent Memurai 10
-   (please note Memurai is paid software and you should probably just go put Redis in a Docker container instead on Windows, however for testing purposes Memurai will work fine).
+   (please note Memurai is paid software and you should probably just go put Redis in a Docker container instead on Windows, however for testing purposes Memurai will work fine).  
    You need at least v6.2 due to the commands used, though v7 and above is preferable.
 ```
 sudo apt install redis
