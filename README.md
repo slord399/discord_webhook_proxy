@@ -213,7 +213,7 @@ yarn update
 ```
   
 
-## Deploy as pm2 Cluster Mode  (Optional)
+## Deploy pm2 as Cluster Mode  (Optional)
 Depending on your load requirements, you may want to cluster WebhookProxy to deal with a large amount of servers.  
 If you have >50 servers sending webhook requests frequently, you may need to scale.  
 *Due to implementation, Publishers metrics shown on prometheus become negative value unintentionallly which is wrong.
