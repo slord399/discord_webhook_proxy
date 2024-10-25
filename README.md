@@ -70,8 +70,44 @@ This setup involves using a reverse proxy instead of exposing the server directl
 ```
 sudo apt install nginx
 ```
-3.  Update your configuration and set trustProxy to true.
-4.  Create a new site in nginx with the following configuration:
+2. Install Node.js 33 on your server. This can be done through a package manager or through nvm 16. The minimum requirement is v16.
+```
+sudo apt install nodejs
+```
+3. Install git. This is usually a default tool nowadays, but just grab it off of your package manager if you don’t have it.
+```
+sudo apt install git
+```
+4. Install Redis 29 or its Windows equivalent Memurai 10 (please note Memurai is paid software and you should probably just go put Redis in a Docker container instead on Windows, however for testing purposes Memurai will work fine). You need at least v6.2 due to the commands used, though v7 and above is preferable.
+```
+sudo apt install redis
+```
+5.  Install pm2 and yarn
+```
+sudo apt install npm
+npm i -g pm2 yarn
+```
+6.  Run
+```
+git clone https://github.com/slord399/discord_webhook_proxy_original
+```
+to clone the proxy.
+
+7.  Move to resultant webhook-proxy folder.
+8.  Copy the .example.json files to the same name, just without .example (e.g., config.example.json → config.json).
+   ```
+cp config.example.json config.json
+```
+9.  Modify the files as you need, primarily config.json.
+*Update your configuration and set trustProxy to true.
+
+10.  Run
+```
+yarn && yarn build
+```
+This will install the necessary dependencies and build the project.
+
+11.  Create a new site in nginx with the following configuration:
 ```
 server {
     listen 80;
@@ -92,18 +128,32 @@ server {
 ```
 (it is recommended you enable SSL and HTTP2 but this is out of scope for this setup)
 
-4.  Reload nginx and
+12.  Run
 ```
+pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy
+```
+ This will start the app under the name webhook-proxy in pm2.
+     If you wish to run this on startup, run 
+```
+pm2 startup
+```
+follow the instructions there, and then run
+```
+pm2 save
+```
+13.  Reload nginx and pm2 node
+```
+service nginx reload
 pm2 restart webhook-proxy
 ```
-5. You should be good to go.
+14. You should be good to go.
 ```
 /
 /
 /
 ```
 
-6.  (Optional)
+15.  (Optional)
 
 Depending on your load requirements, you may want to cluster WebhookProxy to deal with a large amount of servers.
 
@@ -118,6 +168,7 @@ pm2 delete webhook-proxy
 and then run
 ```
 pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy -i 1
+
 ```
 This will run it in a clustered mode instead of the standard fork mode.
         From here, you can now scale the proxy up and down as you need to by doing 
@@ -149,8 +200,13 @@ A new feature of the proxy is the queue system. This requires some extra (but si
 pm2 restart webhook-proxy
 ```
 5.  Start the queue processor with
+(Fork Mode)
 ```
 pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor
+```
+(Cluster Mode)
+```
+pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor -i 1
 ```
 Run
 ```
