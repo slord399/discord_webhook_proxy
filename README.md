@@ -341,7 +341,10 @@ pm2 logs
 docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-metrics.yml up -d
 docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-overview.yml up -d
 ```
-  
+### To clear docker unused files which in case storage got bump up continuously
+```
+docker system prune
+```
 
 ## Rabbitmq queue bump up (Suspect of process freeze)
 Check pm2 logs for connection errors, if so,
