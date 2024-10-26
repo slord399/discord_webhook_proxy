@@ -99,7 +99,7 @@ for (const [_, iface] of Object.entries(os.networkInterfaces())) {
                     localAddress: net.address
                 }),
                 headers: {
-                    'User-Agent': 'WebhookProxy/1.0 (https://github.com/lewisakura/webhook-proxy)'
+                    'User-Agent': 'WebhookProxy/1.0 (https://github.com/slord399/discord_webhook_proxy_original)'
                 },
                 validateStatus: () => true
             }),
