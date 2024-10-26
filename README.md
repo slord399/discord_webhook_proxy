@@ -39,7 +39,7 @@ npm i -g pm2 yarn
 
 5.  Run following to clone the reposistory.
 ```
-git clone https://github.com/slord399/discord_webhook_proxy_original
+git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy_original
 ```  
   
 
