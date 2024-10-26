@@ -341,6 +341,11 @@ pm2 logs
 docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-metrics.yml up -d
 docker-compose -f /root/rabbitmq-server/deps/rabbitmq_prometheus/docker/docker-compose-overview.yml up -d
 ```
+### In case you need to find out what eat storage try use "ncdu"
+```
+apt install ncdu
+```
+
 ### To clear docker unused files which in case storage got bump up continuously
 ```
 docker system prune
