@@ -134,7 +134,7 @@ npm i -g pm2 yarn
 
 6.  Run following to clone the proxy.
 ```
-git clone https://github.com/slord399/discord_webhook_proxy_original
+git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy_original
 ```
   
 
