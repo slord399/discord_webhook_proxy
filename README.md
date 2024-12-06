@@ -3,6 +3,15 @@
 # WebhookProxy
 A Discord webhook proxy, primarily for internal use with IFTTT.
 
+## Setup
+- [Basic Setup](#basic-setup)
+- [Proper Setup](#the-correct-setup)
+## Optional
+- [Deploy pm2 as Cluster Mode](#deploy-pm2-as-cluster-mode--optional)
+- [Enable Queuing](#enabling-queues)
+- [Grafana Monitoring (Optional)](#grafana-monitoring)
+- [Useful Note](#usefult-note)
+
 # Installation Instructions
 ## Basic Setup
 
