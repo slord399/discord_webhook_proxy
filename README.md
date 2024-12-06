@@ -183,6 +183,7 @@ server {
 
         proxy_pass http://127.0.0.1:8080;
         proxy_redirect off;
+        access_log /var/log/nginx/webhook-proxy_access.log;
     }
 }
 ```
