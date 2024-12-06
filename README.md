@@ -9,7 +9,7 @@ A Discord webhook proxy, primarily for internal use with IFTTT.
 ## Optional
 - [Deploy pm2 as Cluster Mode](#deploy-pm2-as-cluster-mode--optional)
 - [Enable Queuing](#enabling-queues)
-- [Grafana Monitoring (Optional)](#grafana-monitoring)
+- [Grafana Monitoring](#grafana-monitoring)
 - [Useful Note](#usefult-note)
 
 # Installation Instructions
