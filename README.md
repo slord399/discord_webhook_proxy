@@ -72,7 +72,7 @@ yarn && yarn build
 
 10.  Run following will start the app under the name webhook-proxy in pm2.
 ```
-pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy
+pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy
 ```
   
 
@@ -143,7 +143,7 @@ npm i -g pm2 yarn
 
 6.  Run following to clone the proxy.
 ```
-git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy_original
+git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy
 ```
   
 
@@ -191,7 +191,7 @@ server {
 
 12.  Run following will start the app under the name webhook-proxy in pm2.
 ```
-pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy
+pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy
 ```
   
 
@@ -236,7 +236,7 @@ pm2 delete webhook-proxy
 
 2.   Deploy webhook-proxy in cluster mode
 ```
-pm2 start /root/discord_webhook_proxy_original/dist/index.js --name=webhook-proxy -i 1
+pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 1
 ```
   
 
@@ -272,10 +272,10 @@ pm2 restart webhook-proxy
 5.  Start the queue processor with  
 (Fork Mode / Cluster Mode)
 ```
-pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor
+pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor
 ```  
 ```
-pm2 start /root/discord_webhook_proxy_original/dist/queueProcessor.js --name=webhook-proxy-processor -i 1
+pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 1
 ```
   
 
