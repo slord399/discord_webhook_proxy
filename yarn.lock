@@ -117,10 +117,10 @@
     "@types/qs" "*"
     "@types/range-parser" "*"
 
-"@types/express-slow-down@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@types/express-slow-down/-/express-slow-down-1.3.1.tgz#841e4e97327d445b8b3e6dbe6c6ba861f4054ea6"
-  integrity sha512-GE41LgwFsLBusa/s2eJAv/nV4hrSVj/xPjb+1AzxZuWUiGPAA7aKqQQGFOKRM2sEQ/SShu8t/ir8r5B5MXr4GA==
+"@types/express-slow-down@^1.3.5":
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/@types/express-slow-down/-/express-slow-down-1.3.5.tgz#cfef3dee80d9a4c1c40eda2073ef2faaf4b0a25b"
+  integrity sha512-1aN8dIQPFXiYfIJuXRNvzdQcfDVQJHag0OuxAXNpqb4218z+b9QbUCO4/ctwu1u0pXVOwTDJZX+7qankeOHXJw==
   dependencies:
     "@types/express" "*"
 
