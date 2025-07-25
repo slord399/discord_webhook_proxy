@@ -401,7 +401,16 @@ app.get('/stats', statsEndpointRatelimit, async (req, res) => {
     });
 });
 
-app.get('/announcement', async (req, res) => {
+const announcementEndpointRatelimit = slowDown({
+    windowMs: 10000, // 10 seconds
+    delayAfter: 5, // allow 5 requests per windowMs before slowing down
+    delayMs: 500, // add 500ms delay per request above the limit
+    maxDelayMs: 30000, // cap the maximum delay at 30 seconds
+
+    store: new RedisStore({ client: redis, prefix: 'ratelimit:announcementEndpoint:' })
+});
+
+app.get('/announcement', announcementEndpointRatelimit, async (req, res) => {
     const announcement = await redis.hgetall('announcement');
 
     if (!announcement.style) {
