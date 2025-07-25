@@ -617,6 +617,7 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
 // PATCHes use the same ratelimit bucket as the regular message endpoint, so we don't do any special ratelimit handling here.
 app.patch(
     '/api/webhooks/:id/:token/messages/:messageId',
+    patchRateLimiter,
     webhookPostRatelimit,
     webhookInvalidPostRatelimit,
     async (req, res) => {
@@ -701,6 +702,15 @@ const rateLimit = require('express-rate-limit');
 const deleteRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 1000, // limit each IP to 1000 requests per windowMs
+    message: {
+        proxy: true,
+        error: 'Too many requests, please try again later.'
+    }
+});
+
+const patchRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
     message: {
         proxy: true,
         error: 'Too many requests, please try again later.'
