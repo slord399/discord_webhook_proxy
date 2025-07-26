@@ -31,6 +31,6 @@
         "typescript": "^5.8.3"
     },
   "resolutions": {
-    "path-to-regexp": "0.1.12" // このバージョンで固定する
+    "path-to-regexp": "0.1.12" 
   }
 }
