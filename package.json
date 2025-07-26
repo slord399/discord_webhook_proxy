@@ -16,6 +16,7 @@
         "ioredis": "^5.6.1",
         "rate-limit-redis": "^2.1.0",
         "express-rate-limit": "^8.0.1",
+        "path-to-regexp": "0.1.12",
         "cookie": "0.7.0",
         "send": "1.2.0"
     },
@@ -32,6 +33,7 @@
         "typescript": "^5.8.3"
     },
   "resolutions": {
+    "path-to-regexp": "0.1.12",
     "cookie": "0.7.0",
     "send": "1.2.0"
   }
