@@ -29,5 +29,8 @@
         "prisma": "^6.12.0",
         "rimraf": "^6.0.1",
         "typescript": "^5.8.3"
-    }
+    },
+  "resolutions": {
+    "path-to-regexp": "0.1.12" // このバージョンで固定する
+  }
 }
