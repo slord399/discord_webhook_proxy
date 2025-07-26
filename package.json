@@ -17,7 +17,7 @@
         "rate-limit-redis": "^2.1.0",
         "express-rate-limit": "^8.0.1",
         "cookie": "0.7.0",
-        "send": "0.19.0"
+        "send": "1.2.0"
     },
     "devDependencies": {
         "@types/amqplib": "^0.10.7",
@@ -33,6 +33,6 @@
     },
   "resolutions": {
     "cookie": "0.7.0",
-    "send": "0.19.0"
+    "send": "1.2.0"
   }
  }
