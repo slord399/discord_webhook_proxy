@@ -335,6 +335,7 @@ const webhookPostRatelimit = slowDown({
         return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
     },
 
+    // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
     store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookPost:' })
 });
 
@@ -348,6 +349,7 @@ const webhookQueuePostRatelimit = slowDown({
         return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
     },
 
+    // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
     store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookQueue:' })
 });
 
@@ -365,6 +367,7 @@ const webhookInvalidPostRatelimit = slowDown({
         return !(res.statusCode >= 400 && res.statusCode < 500 && res.statusCode !== 429); // trigger if it's a 4xx but not a ratelimit
     },
 
+    // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
     store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookInvalidPost:' })
 });
 
@@ -374,6 +377,7 @@ const unknownEndpointRatelimit = slowDown({
     delayMs: 500,
     maxDelayMs: 30000,
 
+    // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
     store: new RedisStore({ client: redis, prefix: 'ratelimit:unknownEndpoint:' })
 });
 
@@ -383,6 +387,7 @@ const statsEndpointRatelimit = slowDown({
     delayMs: 500,
     maxDelayMs: 30000,
 
+    // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
     store: new RedisStore({ client: redis, prefix: 'ratelimit:statsEndpoint:' })
 });
 
