@@ -134,7 +134,7 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/ioredis@*", "@types/ioredis@^5.0.0":
+"@types/ioredis@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-5.0.0.tgz#c1ea7e2f3e2c5a942a27cfee6f62ddcfb23fb3e7"
   integrity sha512-zJbJ3FVE17CNl5KXzdeSPtdltc4tMT3TzC6fxQS0sQngkbFZ6h+0uTafsRqu+eSLIugf6Yb0Ea0SUuRr42Nk9g==
@@ -163,21 +163,12 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.4.tgz#cd667bcfdd025213aafb7ca5915a932590acdcdc"
   integrity sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==
 
-"@types/rate-limit-redis@^1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@types/rate-limit-redis/-/rate-limit-redis-1.7.2.tgz#19627ec7e60099e354e4734ac1a3c0e81a0051c6"
-  integrity sha512-6Rl/7pKHpTYCUnj+2WGfpcF5YiZAV1Zn9GDjZI1pnRcY1qZi9MED7YQSKmGnycLHk5E8vorARw2S9llfkhd6xQ==
+"@types/rate-limit-redis@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rate-limit-redis/-/rate-limit-redis-3.0.0.tgz#5dc84d2ce6924da3360ec300502080e6d5301d61"
+  integrity sha512-BW3tros2nmZOJLkoQPBViUhzOWBOwFnIWUevG5+NpFVmngb8RulB4p/nkEhYyOrrKR5UJ74GCT7nyDG6zr+isQ==
   dependencies:
-    "@types/ioredis" "*"
-    "@types/redis" "*"
-    express-rate-limit ">=3.4.0"
-
-"@types/redis@*":
-  version "2.8.32"
-  resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.32.tgz#1d3430219afbee10f8cfa389dad2571a05ecfb11"
-  integrity sha512-7jkMKxcGq9p242exlbsVzuJb57KqHRhNl4dHoQu2Y5v9bCAbtIXXH0R3HleSQW4CTOqpHIYUW3t6tpUj4BVQ+w==
-  dependencies:
-    "@types/node" "*"
+    rate-limit-redis "*"
 
 "@types/serve-static@*":
   version "1.13.10"
@@ -473,7 +464,7 @@ express-async-errors@^3.1.1:
   resolved "https://registry.yarnpkg.com/express-async-errors/-/express-async-errors-3.1.1.tgz#6053236d61d21ddef4892d6bd1d736889fc9da41"
   integrity sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==
 
-express-rate-limit@8, express-rate-limit@>=3.4.0, express-rate-limit@^8.1.0:
+express-rate-limit@8, express-rate-limit@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-8.1.0.tgz#b956708999347e4d87146f8c3e6dd954fde7718b"
   integrity sha512-4nLnATuKupnmwqiJc27b4dCFmB/T60ExgmtDD7waf4LdrbJ8CPZzZRHYErDYNhoz+ql8fUdYwM/opf90PoPAQA==
@@ -906,7 +897,7 @@ range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-rate-limit-redis@^4.2.2:
+rate-limit-redis@*, rate-limit-redis@^4.2.2:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/rate-limit-redis/-/rate-limit-redis-4.2.2.tgz#26cd30fecb987530a47748278304b86066525e06"
   integrity sha512-0SGzpSCZQgkJuUK5AqGaUkgwTMaujWIek0PwlZBDsdNIcasrJae8AC47tP5UHayqDcocJxtogL6DnZFTLoruUw==
