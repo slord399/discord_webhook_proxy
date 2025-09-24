@@ -406,7 +406,17 @@ app.get('/stats', statsEndpointRatelimit, async (req, res) => {
     });
 });
 
-app.get('/announcement', async (req, res) => {
+const announcementEndpointRatelimit = slowDown({
+    windowMs: 5000,
+    delayAfter: 1,
+    delayMs: 500,
+    maxDelayMs: 30000,
+
+    // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
+    store: new RedisStore({ client: redis, prefix: 'ratelimit:announcementEndpoint:' })
+});
+
+app.get('/announcement', announcementEndpointRatelimit, async (req, res) => {
     const announcement = await redis.hgetall('announcement');
 
     if (!announcement.style) {
