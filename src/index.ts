@@ -5,7 +5,8 @@ import slowDown from 'express-slow-down';
 import RedisStore from 'rate-limit-redis';
 import { PrismaClient } from '@prisma/client';
 import amqp from 'amqplib';
-import Redis from 'ioredis';
+import Redis, { Command } from 'ioredis';
+import rateLimit from 'express-rate-limit';
 
 import crypto from 'crypto';
 import fs from 'fs';
@@ -99,7 +100,7 @@ for (const [_, iface] of Object.entries(os.networkInterfaces())) {
                     localAddress: net.address
                 }),
                 headers: {
-                    'User-Agent': 'WebhookProxy/1.0 (https://github.com/lewisakura/webhook-proxy)'
+                    'User-Agent': 'WebhookProxy/1.0 (https://github.com/slord399/discord_webhook_proxy)'
                 },
                 validateStatus: () => true
             }),
@@ -164,7 +165,7 @@ async function banIp(ip: string, reason: string) {
 
 async function trackBadRequest(id: string, gameId?: string) {
     const violations = await redis.incr(`badRequests:${id}`);
-    await redis.send_command('EXPIRE', [`badRequests:${id}`, 600, 'NX']);
+    await redis.sendCommand(new Command('EXPIRE', [`badRequests:${id}`, 600, 'NX']));
 
     warn(formatId(id, gameId), 'made a bad request, they have made', violations, 'within the window');
 
@@ -183,15 +184,15 @@ async function trackNonExistentWebhook(ip: string, clientAddress: string) {
     const hash = crypto.createHash('sha1').update(ip).digest('hex');
 
     const violations = await redis.incr(`nonExistentWebhooks:${hash}`);
-    await redis.send_command('EXPIRE', [`nonExistentWebhooks:${hash}`, 3600, 'NX']);
+    await redis.sendCommand(new Command('EXPIRE', [`nonExistentWebhooks:${hash}`, 3600, 'NX']));
 
     await redis.incr('nonExistentWebhooks');
-    await redis.send_command('EXPIRE', ['nonExistentWebhooks', 86400, 'NX']);
+    await redis.sendCommand(new Command('EXPIRE', ['nonExistentWebhooks', 86400, 'NX']));
 
     warn(ip, 'made a request to a nonexistent webhook, they have done so', violations, 'time within the window');
 
     await redis.incr(`clientAbuse:${clientAddress}`);
-    await redis.send_command('EXPIRE', [`clientAbuse:${clientAddress}`, 86400, 'NX']);
+    await redis.sendCommand(new Command('EXPIRE', [`clientAbuse:${clientAddress}`, 86400, 'NX']));
 
     if (violations > 2 && config.autoBlock) {
         await banIp(ip, '[Automated] >2 unique non-existent webhook requests within 1 hour.');
@@ -208,10 +209,10 @@ async function trackInvalidWebhookToken(ip: string) {
     const hash = crypto.createHash('sha1').update(ip).digest('hex');
 
     const violations = await redis.incr(`invalidWebhookToken:${hash}`);
-    await redis.send_command('EXPIRE', [`invalidWebhookToken:${hash}`, 3600, 'NX']);
+    await redis.sendCommand(new Command('EXPIRE', [`invalidWebhookToken:${hash}`, 3600, 'NX']));
 
     await redis.incr('invalidWebhookToken');
-    await redis.send_command('EXPIRE', ['invalidWebhookToken', 86400, 'NX']);
+    await redis.sendCommand(new Command('EXPIRE', ['invalidWebhookToken', 86400, 'NX']));
 
     warn(
         ip,
@@ -391,6 +392,15 @@ const statsEndpointRatelimit = slowDown({
     store: new RedisStore({ client: redis, prefix: 'ratelimit:statsEndpoint:' })
 });
 
+const announcementEndpointRatelimit = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: {
+        proxy: true,
+        error: 'Too many requests, please try again later.'
+    }
+});
+
 app.use(Express.static('public'));
 
 app.get('/stats', statsEndpointRatelimit, async (req, res) => {
@@ -404,16 +414,6 @@ app.get('/stats', statsEndpointRatelimit, async (req, res) => {
         webhooks: data[1],
         version: VERSION
     });
-});
-
-const announcementEndpointRatelimit = slowDown({
-    windowMs: 5000,
-    delayAfter: 1,
-    delayMs: 500,
-    maxDelayMs: 30000,
-
-    // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-    store: new RedisStore({ client: redis, prefix: 'ratelimit:announcementEndpoint:' })
 });
 
 app.get('/announcement', announcementEndpointRatelimit, async (req, res) => {
@@ -490,7 +490,7 @@ async function preRequestChecks(req: Request, res: Response, gameId?: string) {
             `webhooksSeen:${req.params.id}`,
             (!!(await db.webhooksSeen.findFirst({ where: { id: req.params.id } }))).toString()
         );
-        await redis.send_command('EXPIRE', [`webhooksSeen:${req.params.id}`, 600, 'NX']);
+        await redis.sendCommand(new Command('EXPIRE', [`webhooksSeen:${req.params.id}`, 600, 'NX']));
     }
 
     return true;
@@ -542,7 +542,7 @@ async function postRequestChecks(
         (await redis.get(`webhooksSeen:${req.params.id}`)) === 'false'
     ) {
         await redis.set(`webhooksSeen:${req.params.id}`, 'true');
-        await redis.send_command('EXPIRE', [`webhooksSeen:${req.params.id}`, 600, 'NX']);
+        await redis.sendCommand(new Command('EXPIRE', [`webhooksSeen:${req.params.id}`, 600, 'NX']));
 
         await db.webhooksSeen.upsert({ where: { id: req.params.id }, update: {}, create: { id: req.params.id } });
     }
@@ -629,9 +629,28 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
     return res.status(response.status).json(response.data);
 });
 
+const deleteRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // limit each IP to 1000 requests per windowMs
+    message: {
+        proxy: true,
+        error: 'Too many requests, please try again later.'
+    }
+});
+
+const patchRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // limit each IP to 100 requests per windowMs
+    message: {
+        proxy: true,
+        error: 'Too many requests, please try again later.'
+    }
+});
+
 // PATCHes use the same ratelimit bucket as the regular message endpoint, so we don't do any special ratelimit handling here.
 app.patch(
     '/api/webhooks/:id/:token/messages/:messageId',
+    patchRateLimiter,
     webhookPostRatelimit,
     webhookInvalidPostRatelimit,
     async (req, res) => {
@@ -713,6 +732,7 @@ app.patch(
 // DELETEs use the same ratelimit bucket as the regular message endpoint, so we don't do any special ratelimit handling here.
 app.delete(
     '/api/webhooks/:id/:token/messages/:messageId',
+    deleteRateLimiter,
     webhookPostRatelimit,
     webhookInvalidPostRatelimit,
     async (req, res) => {
