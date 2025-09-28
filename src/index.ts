@@ -394,7 +394,7 @@ const statsEndpointRatelimit = slowDown({
 
 const announcementEndpointRatelimit = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 5000, // limit each IP to 1,000 requests per windowMs
     message: {
         proxy: true,
         error: 'Too many requests, please try again later.'
@@ -631,7 +631,7 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
 
 const deleteRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 1000, // limit each IP to 1000 requests per windowMs
+    max: 5000, // limit each IP to 1000 requests per windowMs
     message: {
         proxy: true,
         error: 'Too many requests, please try again later.'
@@ -640,7 +640,7 @@ const deleteRateLimiter = rateLimit({
 
 const patchRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 1000, // limit each IP to 100 requests per windowMs
+    max: 5000, // limit each IP to 100 requests per windowMs
     message: {
         proxy: true,
         error: 'Too many requests, please try again later.'
