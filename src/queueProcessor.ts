@@ -8,7 +8,7 @@ import beforeShutdown from './beforeShutdown';
 import { error, log, warn } from './log';
 import { setup } from './rmq';
 
-const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
+const config = JSON.parse(fs.readFileSync('/root/discord_webhook_proxy/config.json', 'utf8')) as {
     port: number;
     queue: {
         enabled: boolean;
@@ -64,7 +64,7 @@ async function run() {
                     {
                         headers: {
                             'User-Agent':
-                                'WebhookProxy-QueueProcessor/1.0 (https://github.com/lewisakura/webhook-proxy)',
+                                'WebhookProxy-QueueProcessor/1.0 (https://github.com/slord399/discord_webhook_proxy_original)',
                             'Content-Type': 'application/json'
                         }
                     }
