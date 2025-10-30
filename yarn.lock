@@ -562,10 +562,10 @@ express-async-errors@^3.1.1:
   resolved "https://registry.yarnpkg.com/express-async-errors/-/express-async-errors-3.1.1.tgz#6053236d61d21ddef4892d6bd1d736889fc9da41"
   integrity sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==
 
-express-rate-limit@*, express-rate-limit@8, express-rate-limit@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-8.1.0.tgz#b956708999347e4d87146f8c3e6dd954fde7718b"
-  integrity sha512-4nLnATuKupnmwqiJc27b4dCFmB/T60ExgmtDD7waf4LdrbJ8CPZzZRHYErDYNhoz+ql8fUdYwM/opf90PoPAQA==
+express-rate-limit@*, express-rate-limit@8, express-rate-limit@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-8.2.0.tgz#3416dc0dbb136d6096d0ed3358687493a8cbf24d"
+  integrity sha512-zDLb8RsXoA09dui1mvm/bAqSYeUh/bj3+fcDeiNBebSbSjl9IEK5mbCSYSRk52Lrco9sj9Xjuzkot3TXuXEw0A==
   dependencies:
     ip-address "10.0.1"
 
