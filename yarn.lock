@@ -569,10 +569,10 @@ express-rate-limit@*, express-rate-limit@8, express-rate-limit@^8.2.1:
   dependencies:
     ip-address "10.0.1"
 
-express-slow-down@*, express-slow-down@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/express-slow-down/-/express-slow-down-3.0.0.tgz#f2ffd738dbc9e352c788979bbec17af3b8477aea"
-  integrity sha512-G/EQSH3IV2zukLwQnsCKEveswk8L31vDqiPS6eNkXYeSRhjHB3YSuKNoVSGjOVSqPGW1p6Oeq+b8l1PyWeVEmw==
+express-slow-down@*, express-slow-down@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/express-slow-down/-/express-slow-down-3.0.1.tgz#8d027066e64956e44ae4afbcf2049e3b3988abf2"
+  integrity sha512-Syl+K1o/z8zSTsMWbDpJEOF5WzSj923ktkv/WbNq6E3tmNwPoEcKIhqRxMLWq3a/4OudRciylEqEZvzMBdzn8w==
   dependencies:
     express-rate-limit "8"
 
