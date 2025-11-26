@@ -28,7 +28,7 @@
         "@types/ioredis": "^5.0.0",
         "@types/node": "^24.10.1",
         "@types/rate-limit-redis": "^3.0.0",
-        "prisma": "^7.0.0",
+        "prisma": "^7.0.1",
         "rimraf": "^6.1.2",
         "typescript": "^5.9.3"
     }
