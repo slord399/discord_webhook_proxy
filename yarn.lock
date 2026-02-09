@@ -119,10 +119,17 @@
   dependencies:
     "@octokit/openapi-types" "^27.0.0"
 
-"@prisma/client@6.19.2":
-  version "6.19.2"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-6.19.2.tgz#96cde2f9340a5d9a91a80b2e0733ede158aede5d"
-  integrity sha512-gR2EMvfK/aTxsuooaDA32D8v+us/8AAet+C3J1cc04SW35FPdZYgLF+iN4NDLUgAaUGTKdAB0CYenu1TAgGdMg==
+"@prisma/client-runtime-utils@7.3.0":
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client-runtime-utils/-/client-runtime-utils-7.3.0.tgz#80b4557315f6ca06dbc33725bac6d2cbd8aa394e"
+  integrity sha512-dG/ceD9c+tnXATPk8G+USxxYM9E6UdMTnQeQ+1SZUDxTz7SgQcfxEqafqIQHcjdlcNK/pvmmLfSwAs3s2gYwUw==
+
+"@prisma/client@7.3.0":
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-7.3.0.tgz#6da3ce73b133bcca520a38f05580d2cf404ca3fe"
+  integrity sha512-FXBIxirqQfdC6b6HnNgxGmU7ydCPEPk7maHMOduJJfnTP+MuOGa15X4omjR/zpPUUpm8ef/mEFQjJudOGkXFcQ==
+  dependencies:
+    "@prisma/client-runtime-utils" "7.3.0"
 
 "@prisma/config@6.19.2":
   version "6.19.2"
