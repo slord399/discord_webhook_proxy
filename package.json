@@ -3,7 +3,8 @@
         "@types/express": "^4.17.21",
         "qs": "6.15.0",
         "lodash": "4.17.23",
-        "hono": "4.12.1"
+        "hono": "4.12.5",
+        "@hono/node-server": "1.19.11"
     },
     "scripts": {
         "update": "git pull && yarn && yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
@@ -11,7 +12,7 @@
         "start": "yarn build && node dist"
     },
     "dependencies": {
-        "@prisma/client": "7.4.2",
+        "@prisma/client": "6.19.2",
         "amqplib": "^0.10.9",
         "body-parser": "^2.2.2",
         "express": "^4.21.2",
@@ -32,7 +33,7 @@
         "@types/ioredis": "^5.0.0",
         "@types/node": "^25.3.3",
         "@types/rate-limit-redis": "^3.0.0",
-        "prisma": "7.4.2",
+        "prisma": "6.19.2",
         "rimraf": "^6.1.3",
         "typescript": "^5.9.3"
     }
