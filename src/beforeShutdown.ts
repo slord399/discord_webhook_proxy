@@ -55,7 +55,7 @@ async function shutdownHandler(signalOrEvent: string) {
     for (const listener of shutdownListeners) {
         try {
             await listener(signalOrEvent);
-        } catch (err) {
+        } catch (err: any) {
             warn(`A shutdown handler failed before completing with: ${err.message || err}`);
         }
     }

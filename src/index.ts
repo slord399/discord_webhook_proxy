@@ -58,7 +58,7 @@ type AxiosClientTuple = [client: AxiosInstance, ip: string];
 const axiosClients: AxiosClientTuple[] = [];
 
 let currentRobin = 0;
-function client() {
+function client(): AxiosClientTuple {
     const instance = axiosClients[currentRobin];
 
     currentRobin++;
@@ -68,7 +68,7 @@ function client() {
 }
 
 let currentSafeRobin = 0;
-async function clientSafe(startedAt: number = null): Promise<AxiosClientTuple | null> {
+async function clientSafe(startedAt: number | null = null): Promise<AxiosClientTuple | null> {
     const instance = axiosClients[currentSafeRobin];
 
     currentSafeRobin++;
@@ -76,7 +76,7 @@ async function clientSafe(startedAt: number = null): Promise<AxiosClientTuple | 
     if (startedAt === currentSafeRobin) return null; // means there is no suitable client
     if (currentSafeRobin === axiosClients.length) currentSafeRobin = 0;
 
-    if (parseInt(await redis.get(`clientAbuse:${instance[1]}`)) >= config.abuseThreshold)
+    if (parseInt((await redis.get(`clientAbuse:${instance[1]}`)) || '0') >= config.abuseThreshold)
         return clientSafe(currentSafeRobin);
 
     return instance;
@@ -91,6 +91,7 @@ async function getClient(webhookId: string) {
 }
 
 for (const [_, iface] of Object.entries(os.networkInterfaces())) {
+    if (!iface) continue;
     for (const net of iface) {
         if (net.internal || net.family !== 'IPv4') continue;
         axiosClients.push([
@@ -134,7 +135,7 @@ async function banWebhook(id: string, reason: string, gameId?: string) {
         }
     });
 
-    warn('banned', formatId(id, gameId), 'for', reason);
+    warn('banned', formatId(id, gameId!), 'for', reason);
 }
 
 async function banIp(ip: string, reason: string) {
@@ -167,10 +168,10 @@ async function trackBadRequest(id: string, gameId?: string) {
     const violations = await redis.incr(`badRequests:${id}`);
     await redis.sendCommand(new Command('EXPIRE', [`badRequests:${id}`, 600, 'NX']));
 
-    warn(formatId(id, gameId), 'made a bad request, they have made', violations, 'within the window');
+    warn(formatId(id, gameId!), 'made a bad request, they have made', violations, 'within the window');
 
     if (violations > 30 && config.autoBlock) {
-        await banWebhook(id, '[Automated] >30 bad requests within 10 minutes.');
+        await banWebhook(id, '[Automated] >30 bad requests within 10 minutes.', gameId);
         await redis.del(`badRequests:${id}`);
     }
 
@@ -229,7 +230,7 @@ async function trackInvalidWebhookToken(ip: string) {
     return violations;
 }
 
-async function getWebhookBanInfo(id: string): Promise<string> {
+async function getWebhookBanInfo(id: string): Promise<string | undefined> {
     const data = await redis.get(`webhookBan:${id}`);
     if (data) {
         return data;
@@ -241,12 +242,12 @@ async function getWebhookBanInfo(id: string): Promise<string> {
         }
     });
 
-    await redis.set(`webhookBan:${id}`, ban?.reason, 'EX', 24 * 60 * 60);
+    await redis.set(`webhookBan:${id}`, ban?.reason ?? '', 'EX', 24 * 60 * 60);
 
     return ban?.reason;
 }
 
-async function getGameBanInfo(id: string): Promise<string> {
+async function getGameBanInfo(id: string): Promise<string | undefined> {
     const data = await redis.get(`gameBan:${id}`);
     if (data) {
         return data;
@@ -258,13 +259,13 @@ async function getGameBanInfo(id: string): Promise<string> {
         }
     });
 
-    await redis.set(`gameBan:${id}`, ban?.reason, 'EX', 24 * 60 * 60);
+    await redis.set(`gameBan:${id}`, ban?.reason ?? '', 'EX', 24 * 60 * 60);
 
     return ban?.reason;
 }
 
-async function getIPBanInfo(ip: string): Promise<{ reason: string; expires: Date }> {
-    if (ip === 'localhost' || ip === '::1' || ip === '127.0.0.1' || ip === '::ffff:127.0.0.1') return undefined; //ignore ourselves
+async function getIPBanInfo(ip: string): Promise<{ reason: string; expires: Date } | null> {
+    if (ip === 'localhost' || ip === '::1' || ip === '127.0.0.1' || ip === '::ffff:127.0.0.1') return null; //ignore ourselves
 
     // generate a hash for redis since IPv6 is a pain to store in redis
     const hash = crypto.createHash('sha1').update(ip).digest('hex');
@@ -272,7 +273,7 @@ async function getIPBanInfo(ip: string): Promise<{ reason: string; expires: Date
     const data = await redis.get(`ipBan:${hash}`);
     if (data) {
         const ban = JSON.parse(data);
-        if (ban === null) return undefined;
+        if (ban === null) return null;
         return { reason: ban.reason, expires: new Date(ban.expires) };
     }
 
@@ -294,7 +295,7 @@ async function getIPBanInfo(ip: string): Promise<{ reason: string; expires: Date
                 }
             });
             await redis.del(`ipBan:${hash}`);
-            return undefined;
+            return null;
         }
     }
 
@@ -305,7 +306,7 @@ async function getIPBanInfo(ip: string): Promise<{ reason: string; expires: Date
         ban?.expires.getTime() ?? Date.now() + 24 * 60 * 60 * 1000
     );
 
-    return ban;
+    return ban as { reason: string; expires: Date } | null;
 }
 
 function formatId(id: string, gameId?: string) {
@@ -332,12 +333,12 @@ const webhookPostRatelimit = slowDown({
     delayMs: 1000,
     maxDelayMs: 30000,
 
-    keyGenerator(req, res) {
+        keyGenerator(req: any, res: any) {
         return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-    store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookPost:' })
+        store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookPost:' }) as any
 });
 
 const webhookQueuePostRatelimit = slowDown({
@@ -346,12 +347,12 @@ const webhookQueuePostRatelimit = slowDown({
     delayMs: 1000,
     maxDelayMs: 30000,
 
-    keyGenerator(req, res) {
+        keyGenerator(req: any, res: any) {
         return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-    store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookQueue:' })
+        store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookQueue:' }) as any
 });
 
 const webhookInvalidPostRatelimit = slowDown({
@@ -360,16 +361,16 @@ const webhookInvalidPostRatelimit = slowDown({
     delayMs: 1000,
     maxDelayMs: 30000,
 
-    keyGenerator(req, res) {
+        keyGenerator(req: any, res: any) {
         return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
     },
 
-    skip(req, res) {
+        skip(req: any, res: any) {
         return !(res.statusCode >= 400 && res.statusCode < 500 && res.statusCode !== 429); // trigger if it's a 4xx but not a ratelimit
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-    store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookInvalidPost:' })
+        store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookInvalidPost:' }) as any
 });
 
 const unknownEndpointRatelimit = slowDown({
@@ -379,7 +380,7 @@ const unknownEndpointRatelimit = slowDown({
     maxDelayMs: 30000,
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-    store: new RedisStore({ client: redis, prefix: 'ratelimit:unknownEndpoint:' })
+        store: new RedisStore({ client: redis, prefix: 'ratelimit:unknownEndpoint:' }) as any
 });
 
 const statsEndpointRatelimit = slowDown({
@@ -389,7 +390,7 @@ const statsEndpointRatelimit = slowDown({
     maxDelayMs: 30000,
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-    store: new RedisStore({ client: redis, prefix: 'ratelimit:statsEndpoint:' })
+        store: new RedisStore({ client: redis, prefix: 'ratelimit:statsEndpoint:' }) as any
 });
 
 const announcementEndpointRatelimit = rateLimit({
@@ -447,11 +448,11 @@ async function preRequestChecks(req: Request, res: Response, gameId?: string) {
     if (gameId) {
         const gameBan = await getGameBanInfo(gameId);
         if (gameBan) {
-            warn('game', gameId, 'attempted to request to', req.params.id, 'whilst banned');
+            warn('game', gameId!, 'attempted to request to', req.params.id, 'whilst banned');
             res.status(403).json({
                 proxy: true,
                 message: 'This game has been banned.',
-                reason: gameBan
+                reason: gameBan!
             });
             return false;
         }
@@ -459,17 +460,18 @@ async function preRequestChecks(req: Request, res: Response, gameId?: string) {
 
     const banInfo = await getWebhookBanInfo(req.params.id);
     if (banInfo) {
-        warn(formatId(req.params.id, gameId), 'attempted to request whilst blocked for', banInfo);
+        warn(formatId(req.params.id, gameId!), 'attempted to request whilst blocked for', banInfo);
         res.status(403).json({
             proxy: true,
             message: 'This webhook has been blocked. Please contact @lewisakura on the DevForum.',
-            reason: banInfo
+            reason: banInfo!
         });
         return false;
     }
 
     // if we know this webhook is already ratelimited, don't hit discord but reject the request instead
-    const ratelimit = parseInt(await redis.get(`webhookRatelimit:${req.params.id}`));
+    const ratelimitStr = await redis.get(`webhookRatelimit:${req.params.id}`);
+    const ratelimit = ratelimitStr ? parseInt(ratelimitStr) : NaN;
     if (ratelimit === 0) {
         // get the timestamp for reset
         const ttl = Math.floor(Date.now() / 1000) + await redis.ttl(`webhookRatelimit:${req.params.id}`);
@@ -552,12 +554,14 @@ async function postRequestChecks(
     }
 
     // process ratelimits
-    await redis.set(
-        `webhookRatelimit:${req.params.id}`,
-        response.headers['x-ratelimit-remaining'],
-        'EXAT',
-        parseInt(response.headers['x-ratelimit-reset'])
-    );
+    if (response.headers['x-ratelimit-remaining'] && response.headers['x-ratelimit-reset']) {
+        await redis.set(
+            `webhookRatelimit:${req.params.id}`,
+            response.headers['x-ratelimit-remaining'],
+            'EXAT',
+            parseInt(response.headers['x-ratelimit-reset'])
+        );
+    }
 
     return true;
 }
@@ -576,7 +580,7 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
         return false;
     }
 
-    const gameId = robloxRanges.check(req.ip) ? req.header('roblox-id') : undefined;
+    const gameId = robloxRanges.check(req.ip) ? (req.header('roblox-id') as string | undefined) : undefined;
 
     if (!(await preRequestChecks(req, res, gameId))) return;
 
@@ -591,7 +595,7 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
     }
 
     const wait = req.query.wait ?? false;
-    const threadId = req.query.thread_id;
+    const threadId = (req.query.thread_id as string | undefined);
 
     const axios = await getClient(req.params.id);
 
@@ -607,7 +611,7 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
         `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}?wait=${wait}${
             threadId ? '&thread_id=' + threadId : ''
         }`,
-        body,
+        body as any,
         {
             headers: {
                 'Content-Type': 'application/json'
@@ -676,7 +680,7 @@ app.patch(
             });
         }
 
-        const gameId = robloxRanges.check(req.ip) ? req.header('roblox-id') : undefined;
+        const gameId = robloxRanges.check(req.ip) ? (req.header('roblox-id') as string | undefined) : undefined;
 
         if (!(await preRequestChecks(req, res, gameId))) return;
 
@@ -690,7 +694,7 @@ app.patch(
             return false;
         }
 
-        const threadId = req.query.thread_id;
+        const threadId = (req.query.thread_id as string | undefined);
 
         const axios = await getClient(req.params.id);
 
@@ -706,7 +710,7 @@ app.patch(
             `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}/messages/${req.params.messageId}${
                 threadId ? '?thread_id=' + threadId : ''
             }`,
-            body,
+            body as any,
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -758,11 +762,11 @@ app.delete(
             });
         }
 
-        const gameId = robloxRanges.check(req.ip) ? req.header('roblox-id') : undefined;
+        const gameId = robloxRanges.check(req.ip) ? (req.header('roblox-id') as string | undefined) : undefined;
 
         if (!(await preRequestChecks(req, res, gameId))) return;
 
-        const threadId = req.query.thread_id;
+        const threadId = (req.query.thread_id as string | undefined);
 
         const axios = await getClient(req.params.id);
 
@@ -816,13 +820,13 @@ app.post('/api/webhooks/:id/:token/queue', webhookQueuePostRatelimit, async (req
         });
     }
 
-    const gameId = robloxRanges.check(req.ip) ? req.header('roblox-id') : undefined;
+    const gameId = robloxRanges.check(req.ip) ? (req.header('roblox-id') as string | undefined) : undefined;
     const threadId = req.query.thread_id;
     const body = req.body;
 
     const reason = await getWebhookBanInfo(req.params.id);
     if (reason) {
-        warn(formatId(req.params.id, gameId), 'attempted to queue whilst blocked for', reason);
+        warn(formatId(req.params.id, gameId!), 'attempted to queue whilst blocked for', reason);
         return res.status(403).json({
             proxy: true,
             message: 'This webhook has been blocked. Please contact @lewisakura on the DevForum.',
