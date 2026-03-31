@@ -14,7 +14,7 @@
         "start": "yarn build && node dist"
     },
     "dependencies": {
-        "@prisma/client": "6.1.0",
+        "@prisma/client": "7.6.0",
         "amqplib": "^1.0.2",
         "body-parser": "^2.2.2",
         "express": "^4.21.2",
