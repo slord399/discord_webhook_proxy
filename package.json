@@ -27,7 +27,7 @@
         "rate-limit-redis": "^4.3.1"
     },
     "devDependencies": {
-        "@actions/github": "9.0.0",
+        "@actions/github": "9.1.0",
         "@prisma/config": "7.7.0",
         "@types/amqplib": "^0.10.8",
         "@types/express": "^4.17.21",
