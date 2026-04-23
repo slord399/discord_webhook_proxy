@@ -159,6 +159,16 @@
     effect "3.20.0"
     empathic "2.0.0"
 
+"@prisma/config@7.8.0":
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@prisma/config/-/config-7.8.0.tgz#401f1f108f2e463e508ac20ca08979d4ee215c65"
+  integrity sha512-HFESzd9rx2ZQxlK+TL7tu1HPvCqrHiL6LCxYykI2c34mvaUuIVVl3lYuicJD/MNnzgPnyeBEMlK4WTomJCV5jw==
+  dependencies:
+    c12 "3.3.4"
+    deepmerge-ts "7.1.5"
+    effect "3.20.0"
+    empathic "2.0.0"
+
 "@prisma/debug@7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@prisma/debug/-/debug-7.2.0.tgz#569b1cbc10eb3e8cae798b40075fd11d21f6b533"
@@ -559,6 +569,24 @@ c12@3.1.0:
     pkg-types "^2.2.0"
     rc9 "^2.1.2"
 
+c12@3.3.4:
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/c12/-/c12-3.3.4.tgz#1253a5faf8b61244884d42459b4a6412571fe9f3"
+  integrity sha512-cM0ApFQSBXuourJejzwv/AuPRvAxordTyParRVcHjjtXirtkzM0uK2L9TTn9s0cXZbG7E55jCivRQzoxYmRAlA==
+  dependencies:
+    chokidar "^5.0.0"
+    confbox "^0.2.4"
+    defu "^6.1.6"
+    dotenv "^17.3.1"
+    exsolve "^1.0.8"
+    giget "^3.2.0"
+    jiti "^2.6.1"
+    ohash "^2.0.11"
+    pathe "^2.0.3"
+    perfect-debounce "^2.1.0"
+    pkg-types "^2.3.0"
+    rc9 "^3.0.1"
+
 call-bind-apply-helpers@^1.0.1, call-bind-apply-helpers@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz#4b5428c222be985d79c3d82657479dbe0b59b2d6"
@@ -589,6 +617,13 @@ chokidar@^4.0.3:
   dependencies:
     readdirp "^4.0.1"
 
+chokidar@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-5.0.0.tgz#949c126a9238a80792be9a0265934f098af369a5"
+  integrity sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==
+  dependencies:
+    readdirp "^5.0.0"
+
 citty@^0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/citty/-/citty-0.1.6.tgz#0f7904da1ed4625e1a9ea7e0fa780981aab7c5e4"
@@ -613,7 +648,7 @@ combined-stream@^1.0.8:
   dependencies:
     delayed-stream "~1.0.0"
 
-confbox@^0.2.2:
+confbox@^0.2.2, confbox@^0.2.4:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/confbox/-/confbox-0.2.4.tgz#592e7be71f882a4a874e3c88f0ac1ef6f7da1ce5"
   integrity sha512-ysOGlgTFbN2/Y6Cg3Iye8YKulHw+R2fNXHrgSmXISQdMnomY6eNDprVdW9R5xBguEqI954+S6709UyiO7B+6OQ==
@@ -673,7 +708,7 @@ deepmerge-ts@7.1.5:
   resolved "https://registry.yarnpkg.com/deepmerge-ts/-/deepmerge-ts-7.1.5.tgz#ff818564007f5c150808d2b7b732cac83aa415ab"
   integrity sha512-HOJkrhaYsweh+W+e74Yn7YStZOilkoPb6fycpwNLKzSPtruFs48nYis0zy5yJz1+ktUhHxoRDJ27RQAWLIJVJw==
 
-defu@^6.1.4:
+defu@^6.1.4, defu@^6.1.6:
   version "6.1.7"
   resolved "https://registry.yarnpkg.com/defu/-/defu-6.1.7.tgz#72543567c8e9f97ff13ce402b6dbe09ac5ae4d23"
   integrity sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==
@@ -693,7 +728,7 @@ depd@2.0.0, depd@~2.0.0:
   resolved "https://registry.yarnpkg.com/depd/-/depd-2.0.0.tgz#b696163cc757560d09cf22cc8fad1571b79e76df"
   integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
 
-destr@^2.0.3:
+destr@^2.0.3, destr@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/destr/-/destr-2.0.5.tgz#7d112ff1b925fb8d2079fac5bdb4a90973b51fdb"
   integrity sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==
@@ -707,6 +742,11 @@ dotenv@^16.6.1:
   version "16.6.1"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.6.1.tgz#773f0e69527a8315c7285d5ee73c4459d20a8020"
   integrity sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==
+
+dotenv@^17.3.1:
+  version "17.4.2"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-17.4.2.tgz#c07e54a746e11eba021dd9e1047ced5afdc1c034"
+  integrity sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==
 
 dunder-proto@^1.0.1:
   version "1.0.1"
@@ -843,7 +883,7 @@ express@^4.21.2:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
-exsolve@^1.0.7:
+exsolve@^1.0.7, exsolve@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/exsolve/-/exsolve-1.0.8.tgz#7f5e34da61cd1116deda5136e62292c096f50613"
   integrity sha512-LmDxfWXwcTArk8fUEnOfSZpHOJ6zOMUJKOtFLFqJLoKJetuQG874Uc7/Kki7zFLzYybmZhp1M7+98pfMqeX8yA==
@@ -969,6 +1009,11 @@ giget@^2.0.0:
     node-fetch-native "^1.6.6"
     nypm "^0.6.0"
     pathe "^2.0.3"
+
+giget@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/giget/-/giget-3.2.0.tgz#bacfdd1264f81485a915928b0ae219be0e81a7c9"
+  integrity sha512-GvHTWcykIR/fP8cj8dMpuMMkvaeJfPvYnhq0oW+chSeIr+ldX21ifU2Ms6KBoyKZQZmVaUAAhQ2EZ68KJF8a7A==
 
 glob@^13.0.3:
   version "13.0.3"
@@ -1116,7 +1161,7 @@ jackspeak@^4.2.3:
   dependencies:
     "@isaacs/cliui" "^9.0.0"
 
-jiti@^2.4.2:
+jiti@^2.4.2, jiti@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/jiti/-/jiti-2.6.1.tgz#178ef2fc9a1a594248c20627cd820187a4d78d92"
   integrity sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==
@@ -1328,7 +1373,12 @@ perfect-debounce@^1.0.0:
   resolved "https://registry.yarnpkg.com/perfect-debounce/-/perfect-debounce-1.0.0.tgz#9c2e8bc30b169cc984a58b7d5b28049839591d2a"
   integrity sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==
 
-pkg-types@^2.2.0:
+perfect-debounce@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/perfect-debounce/-/perfect-debounce-2.1.0.tgz#e7078e38f231cb191855c3136a4423aef725d261"
+  integrity sha512-LjgdTytVFXeUgtHZr9WYViYSM/g8MkcTPYDlPa3cDqMirHjKiSZPYd6DoL7pK8AJQr+uWkQvCjHNdiMqsrJs+g==
+
+pkg-types@^2.2.0, pkg-types@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pkg-types/-/pkg-types-2.3.0.tgz#037f2c19bd5402966ff6810e32706558cb5b5726"
   integrity sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==
@@ -1426,10 +1476,23 @@ rc9@^2.1.2:
     defu "^6.1.4"
     destr "^2.0.3"
 
+rc9@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/rc9/-/rc9-3.0.1.tgz#3895e5834a2b5c2d8fb76d93e802fbcbc2579bc7"
+  integrity sha512-gMDyleLWVE+i6Sgtc0QbbY6pEKqYs97NGi6isHQPqYlLemPoO8dxQ3uGi0f4NiP98c+jMW6cG1Kx9dDwfvqARQ==
+  dependencies:
+    defu "^6.1.6"
+    destr "^2.0.5"
+
 readdirp@^4.0.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/readdirp/-/readdirp-4.1.2.tgz#eb85801435fbf2a7ee58f19e0921b068fc69948d"
   integrity sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==
+
+readdirp@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/readdirp/-/readdirp-5.0.0.tgz#fbf1f71a727891d685bb1786f9ba74084f6e2f91"
+  integrity sha512-9u/XQ1pvrQtYyMpZe7DXKv2p5CNvyVwzUB6uhLAnQwHMSgKMBR62lc7AHljaeteeHXn11XTAaLLUVZYVZyuRBQ==
 
 redis-errors@^1.0.0, redis-errors@^1.2.0:
   version "1.2.0"
