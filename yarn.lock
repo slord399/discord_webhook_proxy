@@ -443,10 +443,10 @@ ajv@^8.12.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
 
-amqplib@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-1.0.3.tgz#ff6d17799a03c1516bd94205759d2c2436d29e62"
-  integrity sha512-nsrXa59tvX4HPjPPW8JJGuBb/Db0MOq3DOhGdSbIY7bTsQDMV2fmF9c3i74g/8Gt9+QWyrxfEPppOOoV9lK1uQ==
+amqplib@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-1.0.4.tgz#ea5671b132e527d4a6898c8961d82ab3b9131967"
+  integrity sha512-dS828kpbJM7vhDCksy151BuPCgx2Sw9g3s2OCoOCV6eenFcQU59SaUK78h+3Fd3Vzh0ytkdhxlZ6dKRVtF93WA==
   dependencies:
     buffer-more-ints "~1.0.0"
 
