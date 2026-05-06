@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "@prisma/client": "7.8.0",
-        "amqplib": "^1.0.3",
+        "amqplib": "^1.0.5",
         "axios": "^1.16.0",
         "body-parser": "^2.2.2",
         "express": "^4.21.2",
