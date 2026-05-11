@@ -443,12 +443,10 @@ ajv@^8.12.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
 
-amqplib@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-1.0.6.tgz#439a8d7039b0a787fb9fb6834421f79fa2a6fb7e"
-  integrity sha512-HGls46nTCt5xInwow2gPcm9mX512CIA7VJWn/GS9A2ymt0PVcAzkd9GsK2tQuUTdKhTu87ZKGl5UMLdcBKNa4A==
-  dependencies:
-    buffer-more-ints "~1.0.0"
+amqplib@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-2.0.1.tgz#7f14517c1d5f6e8608cf0abf4df817e923eb59b6"
+  integrity sha512-a3P2MgfCf9nzVis12VxWEn0dS6hcqve7dlEAhXDtIWR27BlhtMkILOc+H9aeHjDi6i6r94dYKc2Kx2OFe3avvg==
 
 array-flatten@1.1.1:
   version "1.1.1"
@@ -530,11 +528,6 @@ brace-expansion@^5.0.2:
   integrity sha512-Pdk8c9poy+YhOgVWw1JNN22/HcivgKWwpxKq04M/jTmHyCZn12WPJebZxdjSa5TmBqISrUSgNYU3eRORljfCCw==
   dependencies:
     balanced-match "^4.0.2"
-
-buffer-more-ints@~1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/buffer-more-ints/-/buffer-more-ints-1.0.0.tgz#ef4f8e2dddbad429ed3828a9c55d44f05c611422"
-  integrity sha512-EMetuGFz5SLsT0QTnXzINh4Ksr+oo4i+UGTXEshiGCQWnsgSs7ZhJ8fzlwQ+OzEMs0MpDAMr1hxnblp5a4vcHg==
 
 bytes@3.1.2, bytes@^3.1.2, bytes@~3.1.2:
   version "3.1.2"
