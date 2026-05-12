@@ -1348,10 +1348,10 @@ range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-rate-limit-redis@*, rate-limit-redis@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/rate-limit-redis/-/rate-limit-redis-4.3.1.tgz#77274184fe89ce4a8834395306821f854857178e"
-  integrity sha512-+a1zU8+D7L8siDK9jb14refQXz60vq427VuiplgnaLk9B2LnvGe/APLTfhwb4uNIL7eWVknh8GnRp/unCj+lMA==
+rate-limit-redis@*, rate-limit-redis@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/rate-limit-redis/-/rate-limit-redis-5.0.0.tgz#bac2fdf139d9aba8f33c00310bfdacbd6582786f"
+  integrity sha512-+M9el8KZjZ2HXM6/E38jFGmozBbN4C200iLE8+80TgS+8PzSfAAvD1zkx2oWu6YEgSrdiJJNrd4LCFm5vjVJkg==
 
 raw-body@2.5.2:
   version "2.5.2"
