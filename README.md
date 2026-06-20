@@ -9,6 +9,7 @@ A Discord webhook proxy, primarily for internal use with IFTTT.
 ## Optional
 - [Deploy pm2 as Cluster Mode](#deploy-pm2-as-cluster-mode--optional)
 - [Enable Queuing](#enabling-queues)
+- [Updating Codebase](#updating-codebase)
 - [Grafana Monitoring](#grafana-monitoring)
 - [Useful Note](#usefult-note)
 
@@ -288,6 +289,27 @@ pm2 save
 7.  You should be good to go!  
       Try adding /queue onto end of your webhook requests URL!
   
+
+## Updating Codebase
+Run following commands in order
+```bash
+cd /root/
+cp /root/discord_webhook_proxy/config.json config.json
+pm2 delete all
+pm2 kill
+npm install -g pm2
+rm -rf discord_webhook_proxy
+git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy
+cp config.json /root/discord_webhook_proxy/config.json
+cd discord_webhook_proxy
+rm -rf node_modules package-lock.json
+npm install
+npx prisma generate
+yarn && yarn build
+pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
+pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 3
+pm2 save
+```
 
 
 ## Usefult Note
