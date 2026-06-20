@@ -332,11 +332,14 @@ app.use(bodyParser.json());
 const webhookPostRatelimit = slowDown({
     windowMs: 2000,
     delayAfter: 5,
-    delayMs: 1000,
+    delayMs: (used: number, req: any) => (used - req.slowDown.limit) * 1000,
     maxDelayMs: 30000,
 
-        keyGenerator(req: any, res: any) {
-        return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
+    keyGenerator(req: any, res: any) {
+        return (req.params.id ?? req.ip ?? '').toString(); // use the webhook ID as a ratelimiting key, otherwise use IP
+    },
+    validate: {
+        keyGeneratorIpFallback: false
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
@@ -346,11 +349,14 @@ const webhookPostRatelimit = slowDown({
 const webhookQueuePostRatelimit = slowDown({
     windowMs: 1000,
     delayAfter: 10,
-    delayMs: 1000,
+    delayMs: (used: number, req: any) => (used - req.slowDown.limit) * 1000,
     maxDelayMs: 30000,
 
-        keyGenerator(req: any, res: any) {
-        return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
+    keyGenerator(req: any, res: any) {
+        return (req.params.id ?? req.ip ?? '').toString(); // use the webhook ID as a ratelimiting key, otherwise use IP
+    },
+    validate: {
+        keyGeneratorIpFallback: false
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
@@ -360,14 +366,17 @@ const webhookQueuePostRatelimit = slowDown({
 const webhookInvalidPostRatelimit = slowDown({
     windowMs: 30000,
     delayAfter: 3,
-    delayMs: 1000,
+    delayMs: (used: number, req: any) => (used - req.slowDown.limit) * 1000,
     maxDelayMs: 30000,
 
-        keyGenerator(req: any, res: any) {
-        return req.params.id ?? req.ip; // use the webhook ID as a ratelimiting key, otherwise use IP
+    keyGenerator(req: any, res: any) {
+        return (req.params.id ?? req.ip ?? '').toString(); // use the webhook ID as a ratelimiting key, otherwise use IP
+    },
+    validate: {
+        keyGeneratorIpFallback: false
     },
 
-        skip(req: any, res: any) {
+    skip(req: any, res: any) {
         return !(res.statusCode >= 400 && res.statusCode < 500 && res.statusCode !== 429); // trigger if it's a 4xx but not a ratelimit
     },
 
@@ -378,7 +387,7 @@ const webhookInvalidPostRatelimit = slowDown({
 const unknownEndpointRatelimit = slowDown({
     windowMs: 10000,
     delayAfter: 10,
-    delayMs: 500,
+    delayMs: (used: number, req: any) => (used - req.slowDown.limit) * 500,
     maxDelayMs: 30000,
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
@@ -388,7 +397,7 @@ const unknownEndpointRatelimit = slowDown({
 const statsEndpointRatelimit = slowDown({
     windowMs: 5000,
     delayAfter: 1,
-    delayMs: 500,
+    delayMs: (used: number, req: any) => (used - req.slowDown.limit) * 500,
     maxDelayMs: 30000,
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
