@@ -4,6 +4,7 @@ import Express, { NextFunction, Request, Response } from 'express';
 import slowDown from 'express-slow-down';
 import RedisStore from 'rate-limit-redis';
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import amqp from 'amqplib';
 import Redis, { Command } from 'ioredis';
 import rateLimit from 'express-rate-limit';
@@ -47,7 +48,8 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
     abuseThreshold: number;
 };
 
-const db = new PrismaClient();
+const adapter = new PrismaBetterSqlite3({ url: 'file:./proxy.db' });
+const db = new PrismaClient({ adapter });
 const redis = new Redis(config.redis);
 beforeShutdown(async () => {
     await db.$disconnect();
@@ -338,7 +340,7 @@ const webhookPostRatelimit = slowDown({
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-        store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookPost:' }) as any
+        store: new RedisStore({ sendCommand: (...args) => redis.call(...args), prefix: 'ratelimit:webhookPost:' }) as any
 });
 
 const webhookQueuePostRatelimit = slowDown({
@@ -352,7 +354,7 @@ const webhookQueuePostRatelimit = slowDown({
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-        store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookQueue:' }) as any
+        store: new RedisStore({ sendCommand: (...args) => redis.call(...args), prefix: 'ratelimit:webhookQueue:' }) as any
 });
 
 const webhookInvalidPostRatelimit = slowDown({
@@ -370,7 +372,7 @@ const webhookInvalidPostRatelimit = slowDown({
     },
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-        store: new RedisStore({ client: redis, prefix: 'ratelimit:webhookInvalidPost:' }) as any
+        store: new RedisStore({ sendCommand: (...args) => redis.call(...args), prefix: 'ratelimit:webhookInvalidPost:' }) as any
 });
 
 const unknownEndpointRatelimit = slowDown({
@@ -380,7 +382,7 @@ const unknownEndpointRatelimit = slowDown({
     maxDelayMs: 30000,
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-        store: new RedisStore({ client: redis, prefix: 'ratelimit:unknownEndpoint:' }) as any
+        store: new RedisStore({ sendCommand: (...args) => redis.call(...args), prefix: 'ratelimit:unknownEndpoint:' }) as any
 });
 
 const statsEndpointRatelimit = slowDown({
@@ -390,7 +392,7 @@ const statsEndpointRatelimit = slowDown({
     maxDelayMs: 30000,
 
     // @ts-ignore - The types for rate-limit-redis are not compatible with ioredis, so we have to cast to any
-        store: new RedisStore({ client: redis, prefix: 'ratelimit:statsEndpoint:' }) as any
+        store: new RedisStore({ sendCommand: (...args) => redis.call(...args), prefix: 'ratelimit:statsEndpoint:' }) as any
 });
 
 const announcementEndpointRatelimit = rateLimit({
