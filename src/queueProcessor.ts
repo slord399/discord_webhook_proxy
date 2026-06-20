@@ -27,6 +27,11 @@ const client = axios.create({
 let rabbitMq: amqp.Channel;
 
 async function run() {
+    if (!config.queue.enabled) {
+        log('Queue processing is disabled in config. Exiting.');
+        process.exit(0);
+    }
+
     try {
         rabbitMq = await setup(config.queue.rabbitmq, config.queue.queue);
 
