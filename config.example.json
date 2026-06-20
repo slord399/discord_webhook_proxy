@@ -1,6 +1,6 @@
 {
     "port": 8080,
-    "trustProxy": false,    // Set to true if running behind a reverse proxy (like Nginx or Cloudflare) so the app can read users' real IP addresses.
+    "trustProxy": false,    // Set to 1 than true if behind a single reverse proxy (like Nginx) so the app securely reads users' real IPs without allowing header spoofing.
     "autoBlock": false,   // Automatically blocks and crashes the app if a proxy is detected without 'trustProxy' enabled, preventing global rate-limit lockouts.
     "queue": {
         "enabled": false,
