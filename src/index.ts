@@ -51,6 +51,12 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
 const adapter = new PrismaBetterSqlite3({ url: 'file:./proxy.db' });
 const db = new PrismaClient({ adapter });
 const redis = new Redis(config.redis);
+
+// Prevent the process from crashing on Redis connection errors
+redis.on('error', (err) => {
+    error('Redis error encountered:', err);
+});
+
 beforeShutdown(async () => {
     await db.$disconnect();
     redis.disconnect(false);
@@ -70,18 +76,23 @@ function client(): AxiosClientTuple {
 }
 
 let currentSafeRobin = 0;
-async function clientSafe(startedAt: number | null = null): Promise<AxiosClientTuple | null> {
-    const instance = axiosClients[currentSafeRobin];
+async function clientSafe(): Promise<AxiosClientTuple | null> {
+    if (axiosClients.length === 0) return null;
+    const startRobin = currentSafeRobin;
 
-    currentSafeRobin++;
+    while (true) {
+        const instance = axiosClients[currentSafeRobin];
+        currentSafeRobin = (currentSafeRobin + 1) % axiosClients.length;
 
-    if (startedAt === currentSafeRobin) return null; // means there is no suitable client
-    if (currentSafeRobin === axiosClients.length) currentSafeRobin = 0;
+        const abuse = parseInt((await redis.get(`clientAbuse:${instance[1]}`)) || '0');
+        if (abuse < config.abuseThreshold) {
+            return instance;
+        }
 
-    if (parseInt((await redis.get(`clientAbuse:${instance[1]}`)) || '0') >= config.abuseThreshold)
-        return clientSafe(currentSafeRobin);
+        if (currentSafeRobin === startRobin) break;
+    }
 
-    return instance;
+    return null;
 }
 
 async function getClient(webhookId: string) {
@@ -92,26 +103,58 @@ async function getClient(webhookId: string) {
     }
 }
 
-for (const [_, iface] of Object.entries(os.networkInterfaces())) {
-    if (!iface) continue;
-    for (const net of iface) {
-        if (net.internal || net.family !== 'IPv4') continue;
-        axiosClients.push([
-            axios.create({
-                httpsAgent: new https.Agent({
-                    // @ts-ignore - undocumented
-                    localAddress: net.address
+function discoverIPs() {
+    const discovered: string[] = [];
+    for (const [_, iface] of Object.entries(os.networkInterfaces())) {
+        if (!iface) continue;
+        for (const net of iface) {
+            if (net.internal || net.family !== 'IPv4') continue;
+            discovered.push(net.address);
+        }
+    }
+    return discovered;
+}
+
+function updateAxiosClients() {
+    const currentIPs = discoverIPs();
+    const existingIPs = axiosClients.map(c => c[1]);
+
+    // Add new IPs
+    for (const ip of currentIPs) {
+        if (!existingIPs.includes(ip)) {
+            axiosClients.push([
+                axios.create({
+                    httpsAgent: new https.Agent({
+                        // @ts-ignore - undocumented
+                        localAddress: ip
+                    }),
+                    headers: {
+                        'User-Agent': 'WebhookProxy/1.0 (https://github.com/slord399/discord_webhook_proxy)'
+                    },
+                    validateStatus: () => true,
+                    timeout: 30000
                 }),
-                headers: {
-                    'User-Agent': 'WebhookProxy/1.0 (https://github.com/slord399/discord_webhook_proxy)'
-                },
-                validateStatus: () => true
-            }),
-            net.address
-        ]);
-        log('Discovered IP address', net.address);
+                ip
+            ]);
+            log('Discovered new IP address', ip);
+        }
+    }
+
+    // Remove old IPs (optional, but keep it simple for now)
+    for (let i = axiosClients.length - 1; i >= 0; i--) {
+        if (!currentIPs.includes(axiosClients[i][1])) {
+            warn('IP address lost:', axiosClients[i][1]);
+            axiosClients.splice(i, 1);
+        }
+    }
+
+    if (axiosClients.length === 0) {
+        warn('No outbound IP addresses discovered! Requests will likely fail.');
     }
 }
+
+updateAxiosClients();
+setInterval(updateAxiosClients, 60 * 60 * 1000); // Refresh every hour
 
 let rabbitMq: amqp.Channel;
 
@@ -291,7 +334,7 @@ async function getIPBanInfo(ip: string): Promise<{ reason: string; expires: Date
 
     if (ban) {
         if (ban.expires.getTime() <= Date.now()) {
-            await db.bannedIP.delete({
+            await db.bannedIP.deleteMany({
                 where: {
                     id: ip
                 }
@@ -608,9 +651,9 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
     const wait = req.query.wait ?? false;
     const threadId = (req.query.thread_id as string | undefined);
 
-    const axios = await getClient(req.params.id);
+    const clientTuple = await getClient(req.params.id);
 
-    if (!axios) {
+    if (!clientTuple) {
         res.status(403).json({
             proxy: true,
             error: 'The proxy has not seen your webhook before, and is currently unable to service your request.'
@@ -618,19 +661,29 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
         return false;
     }
 
-    const response = await axios[0].post(
-        `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}?wait=${wait}${
-            threadId ? '&thread_id=' + threadId : ''
-        }`,
-        body as any,
-        {
-            headers: {
-                'Content-Type': 'application/json'
+    let response: AxiosResponse<any>;
+    try {
+        response = await clientTuple[0].post(
+            `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}?wait=${wait}${
+                threadId ? '&thread_id=' + threadId : ''
+            }`,
+            body as any,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }
-        }
-    );
+        );
+    } catch (e: any) {
+        error('Failed to forward request to Discord:', e.message ?? e);
+        return res.status(502).json({
+            proxy: true,
+            error: 'Failed to forward request to Discord.',
+            details: e.message
+        });
+    }
 
-    if (!(await postRequestChecks(req, res, response, axios[1], gameId))) return;
+    if (!(await postRequestChecks(req, res, response, clientTuple[1], gameId))) return;
 
     // forward headers to allow clients to process ratelimits themselves
     for (const header of Object.keys(response.headers)) {
@@ -707,9 +760,9 @@ app.patch(
 
         const threadId = (req.query.thread_id as string | undefined);
 
-        const axios = await getClient(req.params.id);
+        const clientTuple = await getClient(req.params.id);
 
-        if (!axios) {
+        if (!clientTuple) {
             res.status(403).json({
                 proxy: true,
                 error: 'The proxy has not seen your webhook before, and is currently unable to service your request.'
@@ -717,19 +770,29 @@ app.patch(
             return false;
         }
 
-        const response = await axios[0].patch(
-            `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}/messages/${req.params.messageId}${
-                threadId ? '?thread_id=' + threadId : ''
-            }`,
-            body as any,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
+        let response: AxiosResponse<any>;
+        try {
+            response = await clientTuple[0].patch(
+                `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}/messages/${req.params.messageId}${
+                    threadId ? '?thread_id=' + threadId : ''
+                }`,
+                body as any,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }
-            }
-        );
+            );
+        } catch (e: any) {
+            error('Failed to forward request to Discord:', e.message ?? e);
+            return res.status(502).json({
+                proxy: true,
+                error: 'Failed to forward request to Discord.',
+                details: e.message
+            });
+        }
 
-        if (!(await postRequestChecks(req, res, response, axios[1], gameId))) return;
+        if (!(await postRequestChecks(req, res, response, clientTuple[1], gameId))) return;
 
         // forward headers to allow clients to process ratelimits themselves
         for (const header of Object.keys(response.headers)) {
@@ -779,9 +842,9 @@ app.delete(
 
         const threadId = (req.query.thread_id as string | undefined);
 
-        const axios = await getClient(req.params.id);
+        const clientTuple = await getClient(req.params.id);
 
-        if (!axios) {
+        if (!clientTuple) {
             res.status(403).json({
                 proxy: true,
                 error: 'The proxy has not seen your webhook before, and is currently unable to service your request.'
@@ -789,18 +852,28 @@ app.delete(
             return false;
         }
 
-        const response = await axios[0].delete(
-            `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}/messages/${req.params.messageId}${
-                threadId ? '?thread_id=' + threadId : ''
-            }`,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
+        let response: AxiosResponse<any>;
+        try {
+            response = await clientTuple[0].delete(
+                `https://discord.com/api/webhooks/${req.params.id}/${req.params.token}/messages/${req.params.messageId}${
+                    threadId ? '?thread_id=' + threadId : ''
+                }`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 }
-            }
-        );
+            );
+        } catch (e: any) {
+            error('Failed to forward request to Discord:', e.message ?? e);
+            return res.status(502).json({
+                proxy: true,
+                error: 'Failed to forward request to Discord.',
+                details: e.message
+            });
+        }
 
-        if (!(await postRequestChecks(req, res, response, axios[1], gameId))) return;
+        if (!(await postRequestChecks(req, res, response, clientTuple[1], gameId))) return;
 
         // forward headers to allow clients to process ratelimits themselves
         for (const header of Object.keys(response.headers)) {

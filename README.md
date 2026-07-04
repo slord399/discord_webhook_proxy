@@ -264,7 +264,7 @@ pm2 scale webhook-proxy <worker count>
 A new feature of the proxy is the queue system. This requires some extra (but simple) setup.
 
 1.  Install RabbitMQ from [here](https://www.rabbitmq.com/docs/install-debian).
-  (Use up to RabbitMQ v4.0.9 for time been as amqplib currently in use not support newer release)
+  (The proxy supports RabbitMQ v4.x)
 
 2.  Edit your configuration to enable queues, and point to your RabbitMQ installation.  
      (it should just be the default value that I’ve provided, but in case you’ve changed anything you can set it here)
