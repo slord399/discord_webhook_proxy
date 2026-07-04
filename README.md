@@ -194,27 +194,33 @@ server {
 ```
 pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy
 ```
+
+
+13.   Set auto restart upon memory limit
+```bash
+pm2 restart webhook-proxy --max-memory-restart 200M
+```
   
 
-13.   If you wish to run this on startup, run 
+14.   If you wish to run this on startup, run 
 ```
 pm2 startup
 ```
   
-14.   Run to save change to pm2
+15.   Run to save change to pm2
 ```
 pm2 save
 ```
   
 
-13.  Reload nginx and pm2 node
+16.  Reload nginx and pm2 node
 ```
 service nginx reload
 pm2 restart webhook-proxy
 ```
   
 
-14. You should be good to go.
+17. You should be good to go.
   
 
 
@@ -280,15 +286,43 @@ pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-prox
 ```
   
 
-6.   Save change to pm2
+6.   Set auto restart upon memory limit
+```bash
+pm2 restart webhook-proxy-processor --max-memory-restart 200M
+```
+
+7.   Save change to pm2
 ```
 pm2 save
 ```
   
 
-7.  You should be good to go!  
+8.  You should be good to go!  
       Try adding /queue onto end of your webhook requests URL!
-  
+
+=Note=
+- For extra security, disable guest account after create new account with password on RabbitMQ though create rabbitmq.conf.
+  (set to "loopback_users.guest = true", then run "rabbitmqctl clear_permissions -p / guest")
+   ```bash
+   rabbitmqctl add_user <USERNAME> <PASSWORD>
+   rabbitmqctl set_user_tags <USERNAME> administrator
+   rabbitmqctl set_permissions -p / <USERNAME> ".*" ".*" ".*"
+   ```
+- In production enviroment, you need to add `Log Rotation` though following settings in rabbitmq.conf.
+   ```bash
+   # Enable logging to a file
+   log.file = true
+
+   # 1. Rotate every night at midnight ($D0 means midnight, $D12 means noon, etc.)
+   log.file.rotation.date = $D0
+
+   # 2. Retain exactly 7 days of archived logs
+   log.file.rotation.count = 7
+
+   # 3. Compress archived logs
+   log.file.rotation.compress = true
+   ```
+   and run `sudo systemctl restart rabbitmq-server` once done.
 
 ## Updating Codebase
 Run following commands in order
