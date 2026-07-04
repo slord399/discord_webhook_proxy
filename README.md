@@ -342,6 +342,8 @@ npx prisma generate
 yarn && yarn build
 pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
 pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 3
+pm2 restart webhook-proxy --max-memory-restart 200M
+pm2 restart webhook-proxy-processor --max-memory-restart 200M
 pm2 save
 ```
 
