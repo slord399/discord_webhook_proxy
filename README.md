@@ -196,9 +196,9 @@ pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy
 ```
 
 
-13.   Set auto restart upon memory limit
+13.   Set auto restart every Sunday at 3AM for "Out of Memory" issue
 ```bash
-pm2 restart webhook-proxy --max-memory-restart 200M
+pm2 restart webhook-proxy --cron-restart="0 3 * * 0"
 ```
   
 
@@ -286,9 +286,9 @@ pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-prox
 ```
   
 
-6.   Set auto restart upon memory limit
+6.   Set auto restart every Sunday at 3AM for "Out of Memory" issue
 ```bash
-pm2 restart webhook-proxy-processor --max-memory-restart 200M
+pm2 restart webhook-proxy-processor --cron-restart="0 3 * * 0"
 ```
 
 7.   Save change to pm2
@@ -302,7 +302,7 @@ pm2 save
 
 =Note=
 - For extra security, disable guest account after create new account with password on RabbitMQ though create rabbitmq.conf.
-  (set to "loopback_users.guest = true", then run "rabbitmqctl clear_permissions -p / guest")
+  (set to `loopback_users.guest = true`, then run `rabbitmqctl clear_permissions -p / guest`)
    ```bash
    rabbitmqctl add_user <USERNAME> <PASSWORD>
    rabbitmqctl set_user_tags <USERNAME> administrator
@@ -342,8 +342,8 @@ npx prisma generate
 yarn && yarn build
 pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
 pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 3
-pm2 restart webhook-proxy --max-memory-restart 200M
-pm2 restart webhook-proxy-processor --max-memory-restart 200M
+pm2 restart webhook-proxy --cron-restart="0 3 * * 0"
+pm2 restart webhook-proxy-processor --cron-restart="0 3 * * 0"
 pm2 save
 ```
 
