@@ -9,7 +9,9 @@
         "effect": "3.20.0",
         "path-to-regexp": "0.1.13"
     },
+    "license": "MIT",
     "scripts": {
+        "preinstall": "npx only-allow yarn",
         "update": "git pull && yarn && yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
         "build": "prisma migrate deploy && prisma generate && rimraf dist && tsc",
         "start": "yarn build && node dist"
