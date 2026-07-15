@@ -8,19 +8,20 @@
         "@hono/node-server": "^2.0.5",
         "undici": "6.27.0",
         "effect": "3.20.0",
-        "path-to-regexp": "0.1.13"
+        "path-to-regexp": "0.1.13",
+        "brace-expansion": "^2.0.1"
     },
     "license": "MIT",
     "scripts": {
         "preinstall": "node preinstall.js yarn",
-        "update": "git pull && NODE_NO_WARNINGS=1 yarn && NODE_NO_WARNINGS=1 yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
-        "build": "NODE_NO_WARNINGS=1 prisma migrate deploy && NODE_NO_WARNINGS=1 prisma generate && rimraf dist && tsc",
-        "start": "yarn build && NODE_NO_WARNINGS=1 node dist"
+        "update": "git pull && NODE_OPTIONS='--no-deprecation' yarn && NODE_OPTIONS='--no-deprecation' yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
+        "build": "NODE_OPTIONS='--no-deprecation' prisma migrate deploy && NODE_OPTIONS='--no-deprecation' prisma generate && rimraf dist && tsc",
+        "start": "yarn build && NODE_OPTIONS='--no-deprecation' node dist"
     },
     "dependencies": {
         "@hono/node-server": "2.0.5",
         "@prisma/adapter-better-sqlite3": "^7.8.0",
-        "@prisma/client": "7.8.0",
+        "@prisma/client": "^7.8.0",
         "amqplib": "^2.0.1",
         "axios": "^1.18.1",
         "better-sqlite3": "^12.11.1",
