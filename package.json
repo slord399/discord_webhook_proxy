@@ -25,7 +25,7 @@
         "express-async-errors": "^3.1.1",
         "express-rate-limit": "^8.5.2",
         "express-slow-down": "^3.1.0",
-        "helmet": "^8.2.0",
+        "helmet": "^8.3.0",
         "ioredis": "^5.11.1",
         "rate-limit-redis": "^5.0.0"
     },
