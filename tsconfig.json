@@ -4,18 +4,11 @@
         "esModuleInterop": true,
         "target": "ESNext",
         "noImplicitAny": true,
-        "moduleResolution": "node",
         "ignoreDeprecations": "6.0",
         "strict": false,
         "rootDir": "./src",
         "sourceMap": true,
-        "outDir": "./dist",
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "./node_modules/*"
-            ]
-        }
+        "outDir": "./dist"
     },
     "include": [
         "./src/**/*"
