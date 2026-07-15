@@ -12,10 +12,10 @@
     },
     "license": "MIT",
     "scripts": {
-        "preinstall": "npx only-allow yarn",
-        "update": "git pull && yarn && yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
-        "build": "prisma migrate deploy && prisma generate && rimraf dist && tsc",
-        "start": "yarn build && node dist"
+        "preinstall": "NODE_NO_WARNINGS=1 npx only-allow yarn",
+        "update": "git pull && NODE_NO_WARNINGS=1 yarn && NODE_NO_WARNINGS=1 yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
+        "build": "NODE_NO_WARNINGS=1 prisma migrate deploy && NODE_NO_WARNINGS=1 prisma generate && rimraf dist && tsc",
+        "start": "yarn build && NODE_NO_WARNINGS=1 node dist"
     },
     "dependencies": {
         "@hono/node-server": "2.0.5",
