@@ -1,3 +1,5 @@
+process.noDeprecation = true;
+
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import bodyParser from 'body-parser';
 import Express, { NextFunction, Request, Response } from 'express';
