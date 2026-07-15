@@ -12,7 +12,8 @@
     "scripts": {
         "update": "git pull && yarn && yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
         "build": "prisma migrate deploy && prisma generate && rimraf dist && tsc",
-        "start": "yarn build && node dist"
+        "start": "yarn build && node dist",
+        "postinstall": "node scripts/patch-parseurl.js"
     },
     "dependencies": {
         "@prisma/adapter-better-sqlite3": "^7.8.0",

@@ -1,5 +1,3 @@
-process.noDeprecation = true;
-
 import amqp from 'amqplib';
 import axios, { AxiosResponse } from 'axios';
 import Redis from 'ioredis';
