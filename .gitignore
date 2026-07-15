@@ -5,3 +5,10 @@ blocklist.json
 
 proxy.db
 proxy.db-journal
+
+# Lock files of other package managers
+package-lock.json
+pnpm-lock.yaml
+bun.lockb
+shrinkwrap.yaml
+yarn-error.log
