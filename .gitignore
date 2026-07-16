@@ -12,3 +12,6 @@ pnpm-lock.yaml
 bun.lockb
 shrinkwrap.yaml
 yarn-error.log
+
+# Generated Prisma Client folder
+src/generated/
