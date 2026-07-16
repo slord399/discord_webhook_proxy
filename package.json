@@ -14,7 +14,6 @@
     "license": "MIT",
     "scripts": {
         "preinstall": "node preinstall.js yarn",
-        "postinstall": "NODE_OPTIONS=--no-deprecation prisma generate || true",
         "update": "git pull && NODE_OPTIONS=--no-deprecation yarn && NODE_OPTIONS=--no-deprecation yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
         "build": "NODE_OPTIONS=--no-deprecation prisma migrate deploy && NODE_OPTIONS=--no-deprecation prisma generate && rimraf dist && tsc",
         "start": "yarn build && NODE_OPTIONS=--no-deprecation node dist"
