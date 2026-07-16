@@ -329,15 +329,14 @@ Run following commands in order
 ```bash
 cd /root/
 cp /root/discord_webhook_proxy/config.json config.json
-pm2 delete all
+pm2 delete webhook-proxy
+pm2 delete webhook-proxy-processor
 pm2 kill
-npm install -g pm2
 rm -rf discord_webhook_proxy
 git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy
 cp config.json /root/discord_webhook_proxy/config.json
 cd discord_webhook_proxy
 rm -rf node_modules package-lock.json
-npm install
 npx prisma generate
 yarn && yarn build
 pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
