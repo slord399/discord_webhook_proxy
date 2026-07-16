@@ -4,7 +4,7 @@ import { getConnInfo } from '@hono/node-server/conninfo';
 import { Hono, Context, Next } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { PrismaClient } from './generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import amqp from 'amqplib';
 import Redis, { Command } from 'ioredis';
