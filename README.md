@@ -337,7 +337,6 @@ git clone -b dev --single-branch https://github.com/slord399/discord_webhook_pro
 cp config.json /root/discord_webhook_proxy/config.json
 cd discord_webhook_proxy
 rm -rf node_modules package-lock.json
-npx prisma generate
 yarn && yarn build
 pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
 pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 3
