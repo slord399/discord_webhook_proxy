@@ -15,7 +15,7 @@
     "scripts": {
         "preinstall": "node preinstall.js yarn",
         "update": "git pull && NODE_OPTIONS=--no-deprecation yarn && NODE_OPTIONS=--no-deprecation yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
-        "build": "NODE_OPTIONS=--no-deprecation prisma migrate deploy && NODE_OPTIONS=--no-deprecation prisma generate && rimraf dist && tsc",
+        "build": "NODE_OPTIONS=--no-deprecation yarn prisma migrate deploy && NODE_OPTIONS=--no-deprecation yarn prisma generate && rimraf dist && tsc",
         "start": "yarn build && NODE_OPTIONS=--no-deprecation node dist"
     },
     "dependencies": {
