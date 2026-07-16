@@ -1974,6 +1974,11 @@ __metadata:
     react-dom: "npm:^18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
+  dependenciesMeta:
+    "@prisma/client":
+      unplugged: true
+    prisma:
+      unplugged: true
   languageName: unknown
   linkType: soft
 
