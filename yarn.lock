@@ -786,13 +786,20 @@ better-result@^2.7.0:
   resolved "https://registry.yarnpkg.com/better-result/-/better-result-2.9.2.tgz#34da6e0e352bd44e4252acb88e2a4a35ec4c335e"
   integrity sha512-WIFoBPCdnTOdk9inkE1ZRvCZ4P0CpSkAiLlchC65N7n9DcjZ3NhqkBOlafzpOVnO8ixyi37kicmSJ3ENhPZl7Q==
 
-better-sqlite3@^12.11.1, better-sqlite3@^12.6.0:
+better-sqlite3@^12.6.0:
   version "12.11.1"
   resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-12.11.1.tgz#067846efabf7671957fc8a9e8df3be39c6cc0b84"
   integrity sha512-dq9AtApgg5PGFtBzPFSBl3HZQjHok5gaQCM6zh2Yk0aSmDCs1CbnVI8/HgASQkNKsWFpseIO9beg5xxpYhbIfA==
   dependencies:
     bindings "^1.5.0"
     prebuild-install "^7.1.1"
+
+better-sqlite3@^13.0.2:
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-13.0.2.tgz#c57fca130a596c2f627089c597becc44d4e2f077"
+  integrity sha512-jW6oufeDhXZaiX9Lw5A+oerVClx4iFrI6uDj1zu7SqUAjak9vbJvA0NEcKLNxHiQHb6kYCoFzzXYV0YOauhV3g==
+  dependencies:
+    node-addon-api "^8.0.0"
 
 bindings@^1.5.0:
   version "1.5.0"
@@ -1492,6 +1499,11 @@ node-abi@^3.3.0:
   integrity sha512-W5ZNO5KRPB5TkYmGVD9F6YqhsglXJzE6etpbmT+f6EQElhiX/UTG551cnsRGvLG3fyZEg9HwaDmNmj5nwJ4z9g==
   dependencies:
     semver "^7.3.5"
+
+node-addon-api@^8.0.0:
+  version "8.9.1"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-8.9.1.tgz#f40a3c0f087d767e7b2961172158badb3b49697c"
+  integrity sha512-4eUQWVPCUUUiBjLnHS3cXWeC6ryoPUc0U3rP7IuzapoGbzMqd/r6KKO0clr0b+snQhsrueFEhCZDdK+LK7hxKg==
 
 object-inspect@^1.13.3, object-inspect@^1.13.4:
   version "1.13.4"
