@@ -70,7 +70,7 @@ async function run() {
                     {
                         headers: {
                             'User-Agent':
-                                'WebhookProxy-QueueProcessor/1.0 (https://github.com/slord399/discord_webhook_proxy_original)',
+                                'WebhookProxy-QueueProcessor/1.0 (https://github.com/slord399/discord_webhook_proxy)',
                             'Content-Type': 'application/json'
                         }
                     }
