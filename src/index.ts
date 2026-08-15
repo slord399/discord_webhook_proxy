@@ -48,11 +48,19 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
 
 const adapter = new PrismaBetterSqlite3({ url: 'file:./proxy.db' });
 const db = new PrismaClient({ adapter });
-const redis = new Redis(config.redis);
+
+const redis = new Redis(config.redis, {
+    maxRetriesPerRequest: null,
+    retryStrategy(times: number) {
+        const delay = Math.min(times * 100, 3000);
+        warn(`[ioredis] Redis connection retry attempt ${times}, delaying ${delay}ms`);
+        return delay;
+    }
+});
 
 // Prevent the process from crashing on Redis connection errors
 redis.on('error', (err) => {
-    error('Redis error encountered:', err);
+    error('[ioredis] Redis Client Error:', err);
 });
 
 beforeShutdown(async () => {
