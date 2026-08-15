@@ -18,7 +18,18 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
     redis: string;
 };
 
-const redis = new Redis(config.redis);
+const redis = new Redis(config.redis, {
+    maxRetriesPerRequest: null,
+    retryStrategy(times: number) {
+        const delay = Math.min(times * 100, 3000);
+        warn(`[ioredis] Redis connection retry attempt ${times}, delaying ${delay}ms`);
+        return delay;
+    }
+});
+
+redis.on('error', (err) => {
+    error('[ioredis] Redis Client Error:', err);
+});
 
 const client = axios.create({
     validateStatus: () => true
