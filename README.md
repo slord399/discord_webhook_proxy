@@ -19,8 +19,8 @@ A Discord webhook proxy, primarily for internal use with IFTTT.
 This setup just exposes the proxy publicly with no reverse proxy.  
 Recommended to start with only, but you should probably use the correct setup as soon as possible.
 
-1. Install Node.js 33 on your server.  
-   The minimum requirement is v16.
+1. Install Node.js 26 on your server.  
+   The minimum requirement is `v26.1.2`.
 ```
 sudo apt install nodejs
 ```
@@ -32,9 +32,7 @@ sudo apt install git
 ```
   
 
-3. Install Redis 29 or its Windows equivalent Memurai 10  
-   (Please note Memurai is paid software and you should probably just go put Redis in a Docker container instead on Windows, however for testing purposes Memurai will work fine).  
-   You need at least v6.2 due to the commands used, though v7 and above is preferable.
+3. Install Redis v7
 ```
 sudo apt install redis
 ```
@@ -114,8 +112,7 @@ sudo apt install nginx
 ```
   
 
-2. Install Node.js 33 on your server.
-   The minimum requirement is v16.
+2. Install Node.js 26 on your server.
 ```
 sudo apt install nodejs
 ```
@@ -127,9 +124,7 @@ sudo apt install git
 ```
   
 
-4. Install Redis 29 or its Windows equivalent Memurai 10
-   (please note Memurai is paid software and you should probably just go put Redis in a Docker container instead on Windows, however for testing purposes Memurai will work fine).  
-   You need at least v6.2 due to the commands used, though v7 and above is preferable.
+4. Install Redis v7
 ```
 sudo apt install redis
 ```
@@ -196,43 +191,31 @@ pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy
 ```
 
 
-13.   Set auto restart every Sunday at 3AM for "Out of Memory" issue
-```bash
-pm2 restart webhook-proxy --cron-restart="0 3 * * 0"
-```
-  
-
-14.   If you wish to run this on startup, run 
+13.   If you wish to run this on startup, run 
 ```
 pm2 startup
 ```
   
-15.   Run to save change to pm2
+14.   Run to save change to pm2
 ```
 pm2 save
 ```
   
 
-16.  Reload nginx and pm2 node
+15.  Reload nginx and pm2 node
 ```
 service nginx reload
 pm2 restart webhook-proxy
 ```
   
 
-17. You should be good to go.
-  
+16. You should be good to go.
 
-
-15. Future updates just require a simple 
-```
-yarn update
-```
   
 
 ## Deploy pm2 as Cluster Mode  (Optional)
 Depending on your load requirements, you may want to cluster WebhookProxy to deal with a large amount of servers.  
-If you have >50 servers sending webhook requests frequently, you may need to scale.  
+If you have 300+ webhook requests per day, you may need to scale.  
 *Due to implementation, Publishers metrics shown on prometheus become negative value unintentionallly which is wrong.
 
 1.   Delete existing webhook-proxy
@@ -286,18 +269,13 @@ pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-prox
 ```
   
 
-6.   Set auto restart every Sunday at 3AM for "Out of Memory" issue
-```bash
-pm2 restart webhook-proxy-processor --cron-restart="0 3 * * 0"
-```
-
-7.   Save change to pm2
+6.   Save change to pm2
 ```
 pm2 save
 ```
   
 
-8.  You should be good to go!  
+7.  You should be good to go!  
       Try adding /queue onto end of your webhook requests URL!
 
 =Note=
@@ -340,8 +318,6 @@ rm -rf node_modules package-lock.json
 yarn && yarn build
 pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
 pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 3
-pm2 restart webhook-proxy --cron-restart="0 3 * * 0"
-pm2 restart webhook-proxy-processor --cron-restart="0 3 * * 0"
 pm2 save
 ```
 
