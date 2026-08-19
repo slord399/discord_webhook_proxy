@@ -9,14 +9,16 @@
         "undici": "^6.28.0",
         "effect": "3.20.0",
         "path-to-regexp": "0.1.13",
-        "brace-expansion": "^5.0.9"
+        "brace-expansion": "^5.0.9",
+        "deepmerge-ts": "^8.0.0"
     },
     "license": "MIT",
     "scripts": {
         "preinstall": "node preinstall.js yarn",
         "update": "git pull && NODE_OPTIONS=--no-deprecation yarn && NODE_OPTIONS=--no-deprecation yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
         "build": "NODE_OPTIONS=--no-deprecation yarn prisma migrate deploy && NODE_OPTIONS=--no-deprecation yarn prisma generate && rimraf dist && tsc",
-        "start": "yarn build && NODE_OPTIONS=--no-deprecation node dist"
+        "start": "yarn build && NODE_OPTIONS=--no-deprecation node dist",
+        "test": "yarn build && NODE_OPTIONS=--no-deprecation node dist/errorAlert.test.js"
     },
     "dependencies": {
         "@hono/node-server": "2.1.1",
@@ -25,6 +27,7 @@
         "amqplib": "^2.0.1",
         "axios": "^1.19.0",
         "better-sqlite3": "^13.0.3",
+        "deepmerge-ts": "^8.0.0",
         "helmet": "^8.3.0",
         "hono": "4.13.2",
         "ioredis": "^6.0.0",
