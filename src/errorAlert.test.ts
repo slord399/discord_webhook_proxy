@@ -1,0 +1,110 @@
+import assert from 'node:assert';
+import axios from 'axios';
+import {
+    getErrorType,
+    handleUnhandledError,
+    resetAlertState,
+    getAlertState
+} from './errorAlert';
+
+async function runTests() {
+    console.log('Running errorAlert tests...');
+
+    // Test 1: getErrorType
+    assert.strictEqual(getErrorType('Simple string error'), 'Simple string error');
+    assert.strictEqual(
+        getErrorType(new TypeError('Cannot read property x')),
+        'TypeError: Cannot read property x'
+    );
+    assert.strictEqual(
+        getErrorType({ name: 'CustomError', message: 'Something failed' }),
+        'CustomError: Something failed'
+    );
+    assert.strictEqual(getErrorType(null), 'UnknownError');
+    console.log('✓ getErrorType tests passed');
+
+    // Test 2: Disabled config
+    resetAlertState();
+    let sentCount = 0;
+    const originalPost = axios.post;
+    // @ts-ignore
+    axios.post = async () => {
+        sentCount++;
+        return { status: 200 };
+    };
+
+    try {
+        for (let i = 0; i < 10; i++) {
+            const result = await handleUnhandledError(
+                new Error('Database error'),
+                { enabled: false, webhook_url: 'http://localhost/webhook' }
+            );
+            assert.strictEqual(result, false);
+        }
+        assert.strictEqual(sentCount, 0, 'No webhook should be sent when disabled');
+        console.log('✓ Disabled config tests passed');
+
+        // Test 3: Throttling & Deduplication (> 5 consecutive occurrences threshold)
+        resetAlertState();
+        sentCount = 0;
+
+        const config = { enabled: true, webhook_url: 'http://localhost/webhook' };
+
+        // Occurrences 1 to 5: should return false, sentCount 0
+        for (let i = 1; i <= 5; i++) {
+            const res = await handleUnhandledError(new Error('Persistent error'), config);
+            assert.strictEqual(res, false, `Occurrence ${i} should not trigger webhook`);
+            assert.strictEqual(sentCount, 0, `Occurrence ${i} sentCount should be 0`);
+        }
+
+        // Occurrence 6: should return true, sentCount 1
+        const res6 = await handleUnhandledError(new Error('Persistent error'), config);
+        assert.strictEqual(res6, true, 'Occurrence 6 should trigger webhook');
+        assert.strictEqual(sentCount, 1, 'Occurrence 6 sentCount should be 1');
+
+        // Occurrences 7 to 10 (immediate subsequent): should return false, sentCount remains 1 (throttled for 1 hour)
+        for (let i = 7; i <= 10; i++) {
+            const res = await handleUnhandledError(new Error('Persistent error'), config);
+            assert.strictEqual(res, false, `Occurrence ${i} should be throttled`);
+            assert.strictEqual(sentCount, 1, `Occurrence ${i} sentCount should remain 1`);
+        }
+        console.log('✓ Consecutive threshold (> 5) and 1-hour throttle tests passed');
+
+        // Test 4: Reset on different error
+        resetAlertState();
+        sentCount = 0;
+
+        // 5 times Error A
+        for (let i = 1; i <= 5; i++) {
+            await handleUnhandledError(new Error('Error A'), config);
+        }
+        assert.strictEqual(sentCount, 0);
+
+        // 1 time Error B -> resets count
+        await handleUnhandledError(new Error('Error B'), config);
+        assert.strictEqual(getAlertState().consecutiveCount, 1);
+        assert.strictEqual(sentCount, 0);
+
+        // 5 times Error A -> count for Error A is now 5 (not 6)
+        for (let i = 1; i <= 5; i++) {
+            await handleUnhandledError(new Error('Error A'), config);
+        }
+        assert.strictEqual(sentCount, 0);
+
+        // 6th consecutive time Error A -> triggers alert
+        const resA6 = await handleUnhandledError(new Error('Error A'), config);
+        assert.strictEqual(resA6, true);
+        assert.strictEqual(sentCount, 1);
+        console.log('✓ Reset on error type change tests passed');
+
+    } finally {
+        axios.post = originalPost;
+    }
+
+    console.log('All errorAlert tests passed successfully!');
+}
+
+runTests().catch(err => {
+    console.error('Test failed:', err);
+    process.exit(1);
+});

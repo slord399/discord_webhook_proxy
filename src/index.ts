@@ -18,6 +18,7 @@ import beforeShutdown from './beforeShutdown';
 import { error, log, warn } from './log';
 import { robloxRanges } from './robloxRanges';
 import { setup } from './rmq';
+import { handleUnhandledError } from './errorAlert';
 
 const VERSION = (() => {
     const rev = fs.readFileSync('.git/HEAD').toString().trim();
@@ -44,6 +45,10 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
     };
     redis: string;
     abuseThreshold: number;
+    webhook?: {
+        enabled?: boolean;
+        webhook_url?: string;
+    };
 };
 
 const adapter = new PrismaBetterSqlite3({ url: 'file:./proxy.db' });
@@ -1021,12 +1026,23 @@ app.notFound(async (c) => {
 app.onError((err, c) => {
     const id = c.req.param('id') || getIP(c);
     error('error encountered:', err, 'by', id);
+    handleUnhandledError(err, config.webhook);
 
     c.status(500);
     return c.json({
         proxy: true,
         error: 'An error occurred while processing your request.'
     });
+});
+
+process.on('uncaughtException', (err) => {
+    error('Uncaught Exception:', err);
+    handleUnhandledError(err, config.webhook);
+});
+
+process.on('unhandledRejection', (reason) => {
+    error('Unhandled Rejection:', reason);
+    handleUnhandledError(reason, config.webhook);
 });
 
 serve({
