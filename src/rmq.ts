@@ -202,6 +202,16 @@ export class RabbitMQClient {
     public isConnected(): boolean {
         return this.channel !== null && this.connection !== null;
     }
+
+    public getStatus(): 'connected' | 'reconnecting' | 'disconnected' {
+        if (this.isConnected()) {
+            return 'connected';
+        }
+        if (this.reconnectTimer !== null || this.isConnecting) {
+            return 'reconnecting';
+        }
+        return 'disconnected';
+    }
 }
 
 export async function setup(host: string, queue: string) {

@@ -59,8 +59,8 @@ export async function handleUnhandledError(
         return false;
     }
 
-    // Trigger after > 5 consecutive occurrences UNLESS immediate is requested
-    if (!options?.immediate && consecutiveCount <= 5) {
+    // Trigger after > 3 consecutive occurrences UNLESS immediate is requested
+    if (!options?.immediate && consecutiveCount <= 3) {
         return false;
     }
 
@@ -102,6 +102,37 @@ export async function handleUnhandledError(
         return true;
     } catch (e: any) {
         error('Failed to dispatch error webhook notification:', e?.message || e);
+        return false;
+    }
+}
+
+export async function sendStartupAlert(webhookConfig?: WebhookConfig): Promise<boolean> {
+    if (!webhookConfig?.enabled || !webhookConfig?.webhook_url) {
+        return false;
+    }
+
+    const payload = {
+        content: `🟢 **Service Startup Notification**`,
+        embeds: [
+            {
+                title: 'WebhookProxy Process Started',
+                description: 'The WebhookProxy service process has successfully booted / restarted.',
+                color: 65280,
+                timestamp: new Date().toISOString()
+            }
+        ]
+    };
+
+    try {
+        await axios.post(webhookConfig.webhook_url, payload, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            timeout: 10000
+        });
+        return true;
+    } catch (e: any) {
+        error('Failed to dispatch startup webhook notification:', e?.message || e);
         return false;
     }
 }
