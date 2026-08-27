@@ -6,7 +6,8 @@ import fs from 'fs';
 
 import beforeShutdown from './beforeShutdown';
 import { error, log, warn } from './log';
-import { setup } from './rmq';
+import { RabbitMQClient } from './rmq';
+import { handleUnhandledError } from './errorAlert';
 
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
     port: number;
@@ -16,6 +17,10 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
         queue: string;
     };
     redis: string;
+    webhook?: {
+        enabled?: boolean;
+        webhook_url?: string;
+    };
 };
 
 const redis = new Redis(config.redis, {
@@ -29,13 +34,22 @@ const redis = new Redis(config.redis, {
 
 redis.on('error', (err) => {
     error('[ioredis] Redis Client Error:', err);
+    handleUnhandledError(err, config.webhook, { immediate: true });
+});
+
+process.on('uncaughtException', (err) => {
+    error('Uncaught Exception in queueProcessor:', err);
+    handleUnhandledError(err, config.webhook, { immediate: true });
+});
+
+process.on('unhandledRejection', (reason) => {
+    error('Unhandled Rejection in queueProcessor:', reason);
+    handleUnhandledError(reason, config.webhook, { immediate: true });
 });
 
 const client = axios.create({
     validateStatus: () => true
 });
-
-let rabbitMq: amqp.Channel;
 
 async function run() {
     if (!config.queue.enabled) {
@@ -43,64 +57,81 @@ async function run() {
         process.exit(0);
     }
 
+    const rabbitMqClient = new RabbitMQClient({
+        host: config.queue.rabbitmq,
+        queue: config.queue.queue,
+        onError: (err) => {
+            handleUnhandledError(err, config.webhook, { immediate: true });
+        }
+    });
+
+    beforeShutdown(async () => {
+        await rabbitMqClient.close();
+    });
+
     try {
-        rabbitMq = await setup(config.queue.rabbitmq, config.queue.queue);
-
-        beforeShutdown(async () => {
-            await rabbitMq.close();
-        });
-
-        log('RabbitMQ set up.');
+        await rabbitMqClient.connect();
+        log('RabbitMQ client connected in processor.');
     } catch (e) {
-        error('RabbitMQ init error:', e);
-        process.exit(-1);
+        error('RabbitMQ initial setup error in processor, will retry in background:', e);
+        handleUnhandledError(e, config.webhook, { immediate: true });
     }
 
-    log('Consuming.');
-    await rabbitMq.prefetch(10);
-    await rabbitMq.consume(
-        config.queue.queue,
-        async msg => {
+    log('Consuming messages from queue.');
+    await rabbitMqClient.consume(
+        async (msg) => {
             if (!msg) return;
-            const data = JSON.parse(msg.content.toString());
-
-            // since the actual proxy sets this key, this is a more reliable way of checking the ratelimit
-            if (parseInt((await redis.get(`webhookRatelimit:${data.id}`)) || 'NaN') === 0) {
-                // mark message as dead, will be requeued via DLX
-                return rabbitMq.reject(msg);
-            }
-
-            let response: AxiosResponse<any>;
-
             try {
-                response = await client.post(
-                    `http://localhost:${config.port}/api/webhooks/${data.id}/${data.token}?wait=false${
-                        data.threadId ? '&thread_id=' + data.threadId : ''
-                    }`,
-                    data.body,
-                    {
-                        headers: {
-                            'User-Agent':
-                                'WebhookProxy-QueueProcessor/1.0 (https://github.com/slord399/discord_webhook_proxy)',
-                            'Content-Type': 'application/json'
-                        }
+                const data = JSON.parse(msg.content.toString());
+
+                let isRatelimited = false;
+                try {
+                    const ratelimitVal = await redis.get(`webhookRatelimit:${data.id}`);
+                    if (parseInt(ratelimitVal || 'NaN') === 0) {
+                        isRatelimited = true;
                     }
-                );
-            } catch (e) {
-                error('Failed to submit webhook to self:', e);
-                return rabbitMq.reject(msg);
+                } catch (e) {
+                    warn('Redis check failed during queue processing:', e);
+                }
+
+                if (isRatelimited) {
+                    return rabbitMqClient.reject(msg);
+                }
+
+                let response: AxiosResponse<any>;
+
+                try {
+                    response = await client.post(
+                        `http://localhost:${config.port}/api/webhooks/${data.id}/${data.token}?wait=false${
+                            data.threadId ? '&thread_id=' + data.threadId : ''
+                        }`,
+                        data.body,
+                        {
+                            headers: {
+                                'User-Agent':
+                                    'WebhookProxy-QueueProcessor/1.0 (https://github.com/slord399/discord_webhook_proxy)',
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                } catch (e) {
+                    error('Failed to submit webhook to self:', e);
+                    return rabbitMqClient.reject(msg);
+                }
+
+                if (response.status === 429) return rabbitMqClient.reject(msg);
+
+                if (response.status >= 400 && response.status < 500) {
+                    warn(data.id, 'made a bad request');
+                }
+
+                rabbitMqClient.ack(msg);
+            } catch (err) {
+                error('Error processing queue message:', err);
+                rabbitMqClient.reject(msg);
             }
-
-            // can be ratelimited due to concurrency (e.g., sending webhooks manually + queueing)
-            if (response.status === 429) return rabbitMq.reject(msg); // die if ratelimited
-
-            if (response.status >= 400 && response.status < 500) {
-                warn(data.id, 'made a bad request');
-            }
-
-            rabbitMq.ack(msg);
         },
-        { noAck: false }
+        { prefetch: 10 }
     );
 }
 
