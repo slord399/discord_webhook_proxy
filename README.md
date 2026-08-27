@@ -48,7 +48,7 @@ npm i -g pm2 yarn
 
 5.  Run following to clone the reposistory.
 ```
-git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy
+git clone https://github.com/slord399/discord_webhook_proxy
 ```  
   
 
@@ -140,7 +140,7 @@ npm i -g pm2 yarn
 
 6.  Run following to clone the proxy.
 ```
-git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy
+git clone https://github.com/slord399/discord_webhook_proxy
 ```
   
 
@@ -316,13 +316,13 @@ pm2 delete webhook-proxy
 pm2 delete webhook-proxy-processor
 pm2 kill
 rm -rf discord_webhook_proxy
-git clone -b dev --single-branch https://github.com/slord399/discord_webhook_proxy
+git clone https://github.com/slord399/discord_webhook_proxy
 cp config.json /root/discord_webhook_proxy/config.json
 cd discord_webhook_proxy
 rm -rf node_modules package-lock.json
 yarn && yarn build
-pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
-pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 3
+// pm2 start /root/discord_webhook_proxy/dist/index.js --name=webhook-proxy -i 3
+// pm2 start /root/discord_webhook_proxy/dist/queueProcessor.js --name=webhook-proxy-processor -i 3
 pm2 save
 ```
 
