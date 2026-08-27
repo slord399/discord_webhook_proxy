@@ -33,8 +33,6 @@ const VERSION = (() => {
     }
 })();
 
-const STATS_SINCE = '2025-04-23T06:15:01.000Z';
-
 function formatNumberWithUnderscores(val: number | string): string {
     const numStr = String(val);
     if (!/^\d+$/.test(numStr)) return numStr;
@@ -57,7 +55,10 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
         enabled?: boolean;
         webhook_url?: string;
     };
+    stats_since?: string;
 };
+
+const STATS_SINCE = config.stats_since && config.stats_since.trim() ? config.stats_since.trim() : new Date().toISOString();
 
 const adapter = new PrismaBetterSqlite3({ url: 'file:./proxy.db' });
 const db = new PrismaClient({ adapter });
