@@ -6,6 +6,10 @@ export interface WebhookConfig {
     webhook_url?: string;
 }
 
+export interface AlertOptions {
+    immediate?: boolean;
+}
+
 export function getErrorType(err: any): string {
     if (!err) return 'UnknownError';
     if (typeof err === 'string') return err;
@@ -39,7 +43,8 @@ const ONE_HOUR_MS = 60 * 60 * 1000;
 
 export async function handleUnhandledError(
     err: any,
-    webhookConfig?: WebhookConfig
+    webhookConfig?: WebhookConfig,
+    options?: AlertOptions
 ): Promise<boolean> {
     const errorType = getErrorType(err);
 
@@ -54,8 +59,8 @@ export async function handleUnhandledError(
         return false;
     }
 
-    // Trigger ONLY after the exact same type of error occurs more than 5 consecutive times
-    if (consecutiveCount <= 5) {
+    // Trigger after > 5 consecutive occurrences UNLESS immediate is requested
+    if (!options?.immediate && consecutiveCount <= 5) {
         return false;
     }
 

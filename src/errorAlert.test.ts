@@ -97,6 +97,34 @@ async function runTests() {
         assert.strictEqual(sentCount, 1);
         console.log('✓ Reset on error type change tests passed');
 
+        // Test 5: Immediate alert flag & notification failure safeguard
+        resetAlertState();
+        sentCount = 0;
+
+        // Immediate flag should trigger alert on 1st occurrence
+        const resImmediate = await handleUnhandledError(
+            new Error('Critical Connection Refused'),
+            config,
+            { immediate: true }
+        );
+        assert.strictEqual(resImmediate, true, 'Immediate option should bypass consecutive threshold');
+        assert.strictEqual(sentCount, 1);
+
+        // Notification dispatch failure safeguard (e.g. network timeout when sending webhook)
+        // @ts-ignore
+        axios.post = async () => {
+            throw new Error('Network timeout sending webhook notification');
+        };
+
+        resetAlertState();
+        const resFailure = await handleUnhandledError(
+            new Error('Another Connection Issue'),
+            config,
+            { immediate: true }
+        );
+        assert.strictEqual(resFailure, false, 'Failed webhook dispatch should safely return false without throwing');
+        console.log('✓ Immediate alert and notification failure safeguard tests passed');
+
     } finally {
         axios.post = originalPost;
     }

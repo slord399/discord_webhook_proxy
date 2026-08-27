@@ -17,7 +17,7 @@ import os from 'os';
 import beforeShutdown from './beforeShutdown';
 import { error, log, warn } from './log';
 import { robloxRanges } from './robloxRanges';
-import { setup } from './rmq';
+import { RabbitMQClient } from './rmq';
 import { handleUnhandledError } from './errorAlert';
 
 const VERSION = (() => {
@@ -66,6 +66,7 @@ const redis = new Redis(config.redis, {
 // Prevent the process from crashing on Redis connection errors
 redis.on('error', (err) => {
     error('[ioredis] Redis Client Error:', err);
+    handleUnhandledError(err, config.webhook, { immediate: true });
 });
 
 beforeShutdown(async () => {
@@ -167,7 +168,7 @@ function updateAxiosClients() {
 updateAxiosClients();
 setInterval(updateAxiosClients, 60 * 60 * 1000); // Refresh every hour
 
-let rabbitMq: amqp.Channel;
+let rabbitMqClient: RabbitMQClient | null = null;
 
 let requestsHandled = 0;
 
@@ -978,25 +979,43 @@ app.post('/api/webhooks/:id/:token/queue', webhookQueuePostRatelimit, async (c) 
         });
     }
 
-    rabbitMq.sendToQueue(
-        config.queue.queue,
-        Buffer.from(
-            JSON.stringify({
-                id,
-                token,
-                body,
-                threadId
-            })
-        ),
-        {
-            persistent: true
+    try {
+        if (!rabbitMqClient) {
+            c.status(503);
+            return c.json({
+                proxy: true,
+                error: 'Queue service connection is currently unavailable. Please try again later.'
+            });
         }
-    );
 
-    return c.json({
-        proxy: true,
-        message: 'Queued successfully.'
-    });
+        await rabbitMqClient.sendToQueue(
+            Buffer.from(
+                JSON.stringify({
+                    id,
+                    token,
+                    body,
+                    threadId
+                })
+            ),
+            {
+                persistent: true
+            }
+        );
+
+        return c.json({
+            proxy: true,
+            message: 'Queued successfully.'
+        });
+    } catch (e: any) {
+        error('Failed to queue webhook message:', e?.message || e);
+        handleUnhandledError(e, config.webhook, { immediate: true });
+
+        c.status(503);
+        return c.json({
+            proxy: true,
+            error: 'Failed to dispatch message to queue. Broker connection may be restarting.'
+        });
+    }
 });
 
 app.notFound(async (c) => {
@@ -1057,17 +1076,27 @@ serve({
     }, 60000);
 
     if (config.queue.enabled) {
-        setup(config.queue.rabbitmq, config.queue.queue)
-            .then((channel) => {
-                rabbitMq = channel;
-                beforeShutdown(async () => {
-                    await rabbitMq.close();
-                });
-                log('RabbitMQ set up.');
+        rabbitMqClient = new RabbitMQClient({
+            host: config.queue.rabbitmq,
+            queue: config.queue.queue,
+            onError: (err) => {
+                handleUnhandledError(err, config.webhook, { immediate: true });
+            }
+        });
+
+        beforeShutdown(async () => {
+            if (rabbitMqClient) {
+                await rabbitMqClient.close();
+            }
+        });
+
+        rabbitMqClient.connect()
+            .then(() => {
+                log('RabbitMQ set up with auto-reconnect capability.');
             })
             .catch((e) => {
-                error('RabbitMQ init error, will disable queues:', e);
-                config.queue.enabled = false;
+                error('Initial RabbitMQ connection failed, will retry in background:', e);
+                handleUnhandledError(e, config.webhook, { immediate: true });
             });
     }
 });
