@@ -499,14 +499,29 @@ app.use('/*', serveStatic({ root: './public' }));
 
 app.get('/stats', statsEndpointRatelimit, async (c) => {
     const data = await Promise.all([
-        (async () => parseInt((await redis.get('stats:requests')) ?? '0'))(),
+        (async () => parseInt((await redis.get('stats:requests')) ?? '0', 10))(),
         db.webhooksSeen.count()
     ]);
 
+    const getRedisStatus = (): 'connected' | 'reconnecting' | 'disconnected' => {
+        const st = redis.status;
+        if (st === 'ready' || st === 'connect') return 'connected';
+        if (st === 'reconnecting' || st === 'connecting') return 'reconnecting';
+        return 'disconnected';
+    };
+
+    const rmqStatus = config.queue.enabled
+        ? (rabbitMqClient ? rabbitMqClient.getStatus() : 'disconnected')
+        : 'disabled';
+
     return c.json({
-        requests: data[0],
-        webhooks: data[1],
-        version: VERSION
+        requests: Number(data[0]),
+        webhooks: Number(data[1]),
+        version: String(VERSION),
+        services: {
+            rabbitmq: rmqStatus,
+            redis: getRedisStatus()
+        }
     });
 });
 
