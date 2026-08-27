@@ -18,7 +18,7 @@ import beforeShutdown from './beforeShutdown';
 import { error, log, warn } from './log';
 import { robloxRanges } from './robloxRanges';
 import { RabbitMQClient } from './rmq';
-import { handleUnhandledError } from './errorAlert';
+import { handleUnhandledError, sendStartupAlert } from './errorAlert';
 
 const VERSION = (() => {
     const rev = fs.readFileSync('.git/HEAD').toString().trim();
@@ -32,6 +32,14 @@ const VERSION = (() => {
             .slice(0, 7);
     }
 })();
+
+const STATS_SINCE = new Date().toISOString();
+
+function formatNumberWithUnderscores(val: number | string): string {
+    const numStr = String(val);
+    if (!/^\d+$/.test(numStr)) return numStr;
+    return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, '_');
+}
 
 const app = new Hono();
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
@@ -517,9 +525,10 @@ app.get('/stats', statsEndpointRatelimit, async (c) => {
     const decimalVersion = isNaN(parseInt(VERSION, 16)) ? VERSION : parseInt(VERSION, 16);
 
     return c.json({
-        requests: Number(data[0]),
+        requests: formatNumberWithUnderscores(data[0]),
         webhooks: Number(data[1]),
-        version: decimalVersion,
+        version: formatNumberWithUnderscores(decimalVersion),
+        stats_since: STATS_SINCE,
         services: {
             rabbitmq: rmqStatus,
             redis: getRedisStatus()
@@ -1086,6 +1095,9 @@ serve({
     port: config.port
 }, (info) => {
     log('Up and running. Version:', VERSION, 'on port', info.port);
+    sendStartupAlert(config.webhook).catch((err) => {
+        error('Startup alert failed:', err);
+    });
 
     setInterval(() => {
         log('In the last minute, this worker handled', requestsHandled, 'requests.');
