@@ -59,8 +59,8 @@ export async function handleUnhandledError(
         return false;
     }
 
-    // Trigger after > 5 consecutive occurrences UNLESS immediate is requested
-    if (!options?.immediate && consecutiveCount <= 5) {
+    // Trigger after > 3 consecutive occurrences UNLESS immediate is requested
+    if (!options?.immediate && consecutiveCount <= 3) {
         return false;
     }
 
