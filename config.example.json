@@ -12,5 +12,6 @@
     "webhook": {
         "enabled": false,
         "webhook_url": ""
-    }
+    },
+    "stats_since": "2025-04-23T06:15:01.000Z"
 }
