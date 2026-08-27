@@ -514,10 +514,12 @@ app.get('/stats', statsEndpointRatelimit, async (c) => {
         ? (rabbitMqClient ? rabbitMqClient.getStatus() : 'disconnected')
         : 'disabled';
 
+    const decimalVersion = isNaN(parseInt(VERSION, 16)) ? VERSION : parseInt(VERSION, 16);
+
     return c.json({
         requests: Number(data[0]),
         webhooks: Number(data[1]),
-        version: String(VERSION),
+        version: decimalVersion,
         services: {
             rabbitmq: rmqStatus,
             redis: getRedisStatus()
