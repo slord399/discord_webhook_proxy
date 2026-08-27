@@ -10,6 +10,7 @@ A Discord webhook proxy, primarily for internal use with IFTTT.
 - [Deploy pm2 as Cluster Mode](#deploy-pm2-as-cluster-mode--optional)
 - [Enable Queuing](#enabling-queues)
 - [Updating Codebase](#updating-codebase)
+- [Debug](#debug)
 - [Grafana Monitoring](#grafana-monitoring)
 - [Useful Note](#usefult-note)
 
@@ -301,6 +302,10 @@ pm2 save
    log.file.rotation.compress = true
    ```
    and run `sudo systemctl restart rabbitmq-server` once done.
+
+## Debug
+You can check stats on /stats for debug purpose.
+You can also setup webhook notification upon exception occure.
 
 ## Updating Codebase
 Run following commands in order
