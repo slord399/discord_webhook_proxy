@@ -714,7 +714,7 @@ app.post('/api/webhooks/:id/:token', webhookPostRatelimit, webhookInvalidPostRat
         });
     }
 
-    if (!body.content && !body.embeds && !body.file) {
+    if (!body || typeof body !== 'object' || (!body.content && !body.embeds && !body.file)) {
         c.status(400);
         return c.json({
             proxy: true,
@@ -820,7 +820,7 @@ app.patch(
             });
         }
 
-        if (!body.content && !body.embeds && !body.file) {
+        if (!body || typeof body !== 'object' || (!body.content && !body.embeds && !body.file)) {
             c.status(400);
             return c.json({
                 proxy: true,
@@ -991,8 +991,11 @@ app.post('/api/webhooks/:id/:token/queue', webhookQueuePostRatelimit, async (c) 
     let body: any;
     try {
         body = await c.req.json();
+        if (!body || typeof body !== 'object') {
+            body = {};
+        }
     } catch {
-        body = null;
+        body = {};
     }
 
     const reason = await getWebhookBanInfo(id);
