@@ -18,7 +18,7 @@
         "update": "git pull && NODE_OPTIONS=--no-deprecation yarn && NODE_OPTIONS=--no-deprecation yarn build && pm2 reload webhook-proxy webhook-proxy-processor || true",
         "build": "NODE_OPTIONS=--no-deprecation yarn prisma migrate deploy && NODE_OPTIONS=--no-deprecation yarn prisma generate && rimraf dist && tsc",
         "start": "yarn build && NODE_OPTIONS=--no-deprecation node dist",
-        "test": "yarn build && NODE_OPTIONS=--no-deprecation node dist/errorAlert.test.js && NODE_OPTIONS=--no-deprecation node dist/payloadValidation.test.js"
+        "test": "yarn build && NODE_OPTIONS=--no-deprecation node dist/errorAlert.test.js && NODE_OPTIONS=--no-deprecation node dist/payloadValidation.test.js && NODE_OPTIONS=--no-deprecation node dist/stats.test.js"
     },
     "dependencies": {
         "@hono/node-server": "2.1.1",

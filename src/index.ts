@@ -525,11 +525,39 @@ app.get('/stats', statsEndpointRatelimit, async (c) => {
 
     const decimalVersion = isNaN(parseInt(VERSION, 16)) ? VERSION : parseInt(VERSION, 16);
 
+    const totalRequests = data[0];
+    const statsSinceDate = new Date(STATS_SINCE);
+    const now = new Date();
+    const elapsedMs = now.getTime() - statsSinceDate.getTime();
+    const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24);
+
+    let requestsPer = {
+        day: '0',
+        week: '0',
+        month: '0',
+        year: '0'
+    };
+
+    if (!isNaN(statsSinceDate.getTime()) && elapsedDays > 0) {
+        const perDay = Math.round(totalRequests / elapsedDays);
+        const perWeek = Math.round(totalRequests / (elapsedDays / 7));
+        const perMonth = Math.round(totalRequests / (elapsedDays / 30.4375));
+        const perYear = Math.round(totalRequests / (elapsedDays / 365.25));
+
+        requestsPer = {
+            day: formatNumberWithUnderscores(perDay),
+            week: formatNumberWithUnderscores(perWeek),
+            month: formatNumberWithUnderscores(perMonth),
+            year: formatNumberWithUnderscores(perYear)
+        };
+    }
+
     return c.json({
-        requests: formatNumberWithUnderscores(data[0]),
+        requests: formatNumberWithUnderscores(totalRequests),
         webhooks: Number(data[1]),
         version: formatNumberWithUnderscores(decimalVersion),
         stats_since: STATS_SINCE,
+        requests_per: requestsPer,
         services: {
             rabbitmq: rmqStatus,
             redis: getRedisStatus()
