@@ -148,10 +148,20 @@
   dependencies:
     "@prisma/client-runtime-utils" "7.10.0"
 
-"@prisma/config@7.9.1", "@prisma/config@^7.9.0":
+"@prisma/config@7.9.1":
   version "7.9.1"
   resolved "https://registry.yarnpkg.com/@prisma/config/-/config-7.9.1.tgz#2d32533d0c92d0b4d04dae81668cc1f72547843c"
   integrity sha512-4znKhxTmXmuPye9Z6pbIyYb5VZlkZ05qG1L6Dr4g+7oTwc6V50Bs9XirFBDdjWt+H/AabMn9aUnxBcvj8z05aA==
+  dependencies:
+    c12 "3.3.4"
+    deepmerge-ts "7.1.5"
+    effect "3.20.0"
+    empathic "2.0.0"
+
+"@prisma/config@^7.10.0":
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/@prisma/config/-/config-7.10.0.tgz#365dfc46fae23867734b60af6fbf9ed297507f31"
+  integrity sha512-Rcg828gIRE3HOQ3pOATFjV5d/P0U9OIobxhd/IMxlfWjA4vru0eGwb0AIwFw0rmcLMVShohZYWPixVxkBHsxUA==
   dependencies:
     c12 "3.3.4"
     deepmerge-ts "7.1.5"
