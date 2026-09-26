@@ -18,15 +18,36 @@ export class RabbitMQClient {
     private consumerCallback: ((msg: amqp.ConsumeMessage | null) => Promise<void>) | null = null;
     private prefetchCount = 10;
     private onError?: (err: any) => void;
+    private currentStatus: 'connected' | 'reconnecting' | 'disconnected' = 'disconnected';
+    private statusSince: string;
 
-    constructor(options: RabbitMQOptions) {
+    constructor(options: RabbitMQOptions, bootTime?: string) {
         this.host = options.host;
         this.queueName = options.queue;
         this.onError = options.onError;
+        this.statusSince = bootTime || new Date().toISOString();
+        this.currentStatus = this.getStatus();
+    }
+
+    private updateStatus() {
+        const newStatus = this.getStatus();
+        if (newStatus !== this.currentStatus) {
+            this.currentStatus = newStatus;
+            this.statusSince = new Date().toISOString();
+        }
+    }
+
+    public getStatusInfo(): { status: 'connected' | 'reconnecting' | 'disconnected'; status_since: string } {
+        this.updateStatus();
+        return {
+            status: this.currentStatus,
+            status_since: this.statusSince
+        };
     }
 
     public async connect(): Promise<amqp.Channel> {
         if (this.channel && this.connection) {
+            this.updateStatus();
             return this.channel;
         }
         if (this.isConnecting) {
@@ -35,10 +56,14 @@ export class RabbitMQClient {
                 await new Promise((resolve) => setTimeout(resolve, 250));
                 attempts++;
             }
-            if (this.channel) return this.channel;
+            if (this.channel) {
+                this.updateStatus();
+                return this.channel;
+            }
         }
 
         this.isConnecting = true;
+        this.updateStatus();
         try {
             log('[amqp] Connecting to RabbitMQ host...');
             const conn = await amqp.connect(this.host);
@@ -62,15 +87,18 @@ export class RabbitMQClient {
                 error('[amqp] Channel error:', err);
                 if (this.onError) this.onError(err);
                 this.channel = null;
+                this.updateStatus();
             });
 
             ch.on('close', () => {
                 warn('[amqp] Channel closed.');
                 this.channel = null;
+                this.updateStatus();
             });
 
             await this.assertTopology(ch);
             this.isConnecting = false;
+            this.updateStatus();
             log('[amqp] RabbitMQ connected and topology asserted.');
             return ch;
         } catch (err) {
@@ -98,6 +126,7 @@ export class RabbitMQClient {
         if (!this.isClosing) {
             this.scheduleReconnect();
         }
+        this.updateStatus();
     }
 
     private scheduleReconnect() {
@@ -106,6 +135,7 @@ export class RabbitMQClient {
             this.reconnectTimer = null;
             if (this.isClosing || this.connection) return;
             log('[amqp] Attempting to reconnect to RabbitMQ...');
+            this.updateStatus();
             try {
                 await this.connect();
                 if (this.consumerCallback && this.channel) {
@@ -113,8 +143,10 @@ export class RabbitMQClient {
                 }
             } catch (e) {
                 error('[amqp] Reconnection attempt failed:', e);
+                this.updateStatus();
             }
         }, 3000);
+        this.updateStatus();
     }
 
     public async sendToQueue(content: Buffer, options?: amqp.Options.Publish): Promise<boolean> {
@@ -192,6 +224,7 @@ export class RabbitMQClient {
         } finally {
             this.channel = null;
             this.connection = null;
+            this.updateStatus();
         }
     }
 
