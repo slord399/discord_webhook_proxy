@@ -39,6 +39,30 @@ function formatNumberWithUnderscores(val: number | string): string {
     return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, '_');
 }
 
+export interface ServiceStatusInfo {
+    status: 'connected' | 'reconnecting' | 'disconnected' | 'disabled';
+    status_since: string;
+}
+
+export interface StatsResponse {
+    requests: string;
+    webhooks: number;
+    version: string;
+    stats_since: string;
+    requests_per: {
+        day: string;
+        week: string;
+        month: string;
+        year: string;
+    };
+    services: {
+        rabbitmq: ServiceStatusInfo;
+        redis: ServiceStatusInfo;
+    };
+}
+
+const BOOT_TIME = new Date().toISOString();
+
 const app = new Hono();
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
     port: number;
@@ -58,7 +82,7 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')) as {
     stats_since?: string;
 };
 
-const STATS_SINCE = config.stats_since && config.stats_since.trim() ? config.stats_since.trim() : new Date().toISOString();
+const STATS_SINCE = config.stats_since && config.stats_since.trim() ? config.stats_since.trim() : BOOT_TIME;
 
 const adapter = new PrismaBetterSqlite3({ url: 'file:./proxy.db' });
 const db = new PrismaClient({ adapter });
@@ -70,6 +94,30 @@ const redis = new Redis(config.redis, {
         warn(`[ioredis] Redis connection retry attempt ${times}, delaying ${delay}ms`);
         return delay;
     }
+});
+
+const getRedisStatus = (): 'connected' | 'reconnecting' | 'disconnected' => {
+    const st = redis.status;
+    if (st === 'ready' || st === 'connect') return 'connected';
+    if (st === 'reconnecting' || st === 'connecting') return 'reconnecting';
+    return 'disconnected';
+};
+
+let currentRedisStatus: 'connected' | 'reconnecting' | 'disconnected' = getRedisStatus();
+let redisStatusSince = BOOT_TIME;
+
+function updateRedisStatus() {
+    const newStatus = getRedisStatus();
+    if (newStatus !== currentRedisStatus) {
+        currentRedisStatus = newStatus;
+        redisStatusSince = new Date().toISOString();
+    }
+}
+
+['connect', 'ready', 'error', 'close', 'reconnecting', 'end', 'wait'].forEach((evt) => {
+    redis.on(evt, () => {
+        updateRedisStatus();
+    });
 });
 
 // Prevent the process from crashing on Redis connection errors
@@ -512,16 +560,18 @@ app.get('/stats', statsEndpointRatelimit, async (c) => {
         db.webhooksSeen.count()
     ]);
 
-    const getRedisStatus = (): 'connected' | 'reconnecting' | 'disconnected' => {
-        const st = redis.status;
-        if (st === 'ready' || st === 'connect') return 'connected';
-        if (st === 'reconnecting' || st === 'connecting') return 'reconnecting';
-        return 'disconnected';
-    };
+    updateRedisStatus();
 
-    const rmqStatus = config.queue.enabled
-        ? (rabbitMqClient ? rabbitMqClient.getStatus() : 'disconnected')
-        : 'disabled';
+    const rmqStatusInfo: ServiceStatusInfo = config.queue.enabled
+        ? (rabbitMqClient
+            ? rabbitMqClient.getStatusInfo()
+            : { status: 'disconnected', status_since: BOOT_TIME })
+        : { status: 'disabled', status_since: BOOT_TIME };
+
+    const redisStatusInfo: ServiceStatusInfo = {
+        status: currentRedisStatus,
+        status_since: redisStatusSince
+    };
 
     const decimalVersion = isNaN(parseInt(VERSION, 16)) ? VERSION : parseInt(VERSION, 16);
 
@@ -552,17 +602,19 @@ app.get('/stats', statsEndpointRatelimit, async (c) => {
         };
     }
 
-    return c.json({
+    const responsePayload: StatsResponse = {
         requests: formatNumberWithUnderscores(totalRequests),
         webhooks: Number(data[1]),
         version: formatNumberWithUnderscores(decimalVersion),
         stats_since: STATS_SINCE,
         requests_per: requestsPer,
         services: {
-            rabbitmq: rmqStatus,
-            redis: getRedisStatus()
+            rabbitmq: rmqStatusInfo,
+            redis: redisStatusInfo
         }
-    });
+    };
+
+    return c.json(responsePayload);
 });
 
 app.get('/announcement', announcementEndpointRatelimit, async (c) => {
@@ -1143,7 +1195,7 @@ serve({
             onError: (err) => {
                 handleUnhandledError(err, config.webhook, { immediate: true });
             }
-        });
+        }, BOOT_TIME);
 
         beforeShutdown(async () => {
             if (rabbitMqClient) {

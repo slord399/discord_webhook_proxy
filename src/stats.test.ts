@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { Hono } from 'hono';
+import { RabbitMQClient } from './rmq';
 
 function formatNumberWithUnderscores(val: number | string): string {
     const numStr = String(val);
@@ -44,8 +45,14 @@ const createStatsApp = (totalRequests: number, statsSinceStr: string, mockNow?: 
             stats_since: STATS_SINCE,
             requests_per: requestsPer,
             services: {
-                rabbitmq: 'connected',
-                redis: 'connected'
+                rabbitmq: {
+                    status: 'connected',
+                    status_since: STATS_SINCE
+                },
+                redis: {
+                    status: 'connected',
+                    status_since: STATS_SINCE
+                }
             }
         });
     });
@@ -85,6 +92,19 @@ async function runTests() {
     });
     console.log('✓ Standard request rate calculation test passed');
 
+    // Test 4: Services object schema test
+    assert.deepStrictEqual(json.services, {
+        rabbitmq: {
+            status: 'connected',
+            status_since: statsSince
+        },
+        redis: {
+            status: 'connected',
+            status_since: statsSince
+        }
+    });
+    console.log('✓ Services status_since response schema test passed');
+
     // Test 2: Zero or negative duration guard (stats_since in future or equal to now)
     const futureApp = createStatsApp(1000, '2099-01-01T00:00:00.000Z', new Date('2025-01-01T00:00:00.000Z'));
     const futureRes = await futureApp.request('http://localhost/stats');
@@ -108,6 +128,66 @@ async function runTests() {
         year: '0'
     });
     console.log('✓ Invalid date string guard test passed');
+
+    // Test 5: RabbitMQClient status transition tracking
+    const bootTime = '2026-01-01T00:00:00.000Z';
+    const rmqClient = new RabbitMQClient({
+        host: 'amqp://localhost',
+        queue: 'test-queue'
+    }, bootTime);
+
+    const initialRmqStatus = rmqClient.getStatusInfo();
+    assert.strictEqual(initialRmqStatus.status, 'disconnected');
+    assert.strictEqual(initialRmqStatus.status_since, bootTime);
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    await rmqClient.close();
+    const closedRmqStatus = rmqClient.getStatusInfo();
+    assert.strictEqual(closedRmqStatus.status, 'disconnected');
+    assert.strictEqual(closedRmqStatus.status_since, bootTime);
+
+    (rmqClient as any).isConnecting = true;
+    (rmqClient as any).updateStatus();
+    const reconnectingRmqStatus = rmqClient.getStatusInfo();
+    assert.strictEqual(reconnectingRmqStatus.status, 'reconnecting');
+    assert.notStrictEqual(reconnectingRmqStatus.status_since, bootTime);
+    assert.ok(new Date(reconnectingRmqStatus.status_since).getTime() > new Date(bootTime).getTime());
+    console.log('✓ RabbitMQClient status transition tracking test passed');
+
+    // Test 6: Redis connection status transition tracking logic
+    let mockRedisStatus: 'ready' | 'reconnecting' | 'end' = 'reconnecting';
+    const getMockRedisStatus = (): 'connected' | 'reconnecting' | 'disconnected' => {
+        if (mockRedisStatus === 'ready') return 'connected';
+        if (mockRedisStatus === 'reconnecting') return 'reconnecting';
+        return 'disconnected';
+    };
+
+    let curRedisStatus = getMockRedisStatus();
+    let redisStatusSince = bootTime;
+
+    const updateRedisStatus = () => {
+        const newStatus = getMockRedisStatus();
+        if (newStatus !== curRedisStatus) {
+            curRedisStatus = newStatus;
+            redisStatusSince = new Date().toISOString();
+        }
+    };
+
+    assert.strictEqual(curRedisStatus, 'reconnecting');
+    assert.strictEqual(redisStatusSince, bootTime);
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    updateRedisStatus();
+    assert.strictEqual(redisStatusSince, bootTime);
+
+    mockRedisStatus = 'ready';
+    updateRedisStatus();
+    assert.strictEqual(curRedisStatus, 'connected');
+    assert.notStrictEqual(redisStatusSince, bootTime);
+    assert.ok(new Date(redisStatusSince).getTime() > new Date(bootTime).getTime());
+    console.log('✓ Redis status transition tracking test passed');
 
     console.log('All stats rate calculation tests passed successfully!');
 }
