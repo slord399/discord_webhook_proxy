@@ -22,7 +22,7 @@
         "test": "yarn build && NODE_OPTIONS=--no-deprecation node dist/errorAlert.test.js && NODE_OPTIONS=--no-deprecation node dist/payloadValidation.test.js && NODE_OPTIONS=--no-deprecation node dist/stats.test.js"
     },
     "dependencies": {
-        "@hono/node-server": "2.1.4",
+        "@hono/node-server": "2.1.5",
         "@prisma/adapter-better-sqlite3": "^7.10.0",
         "@prisma/client": "^7.10.0",
         "amqplib": "^2.2.0",
