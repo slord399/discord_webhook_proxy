@@ -128,12 +128,12 @@
   dependencies:
     "@octokit/openapi-types" "^27.0.0"
 
-"@prisma/adapter-better-sqlite3@^7.10.0":
-  version "7.10.0"
-  resolved "https://registry.yarnpkg.com/@prisma/adapter-better-sqlite3/-/adapter-better-sqlite3-7.10.0.tgz#38ddc619034e2abd4c0e0490e3c29909cf514f1d"
-  integrity sha512-lqEUP9aTaJ0aDbIIrr/jmCqmkmmoAB5i7xeK6LLOTIxrOeK9KDLJDjtlqKKxAQulSwk5fNSshor8Az1QNZdI5Q==
+"@prisma/adapter-better-sqlite3@^7.10.1":
+  version "7.10.1"
+  resolved "https://registry.yarnpkg.com/@prisma/adapter-better-sqlite3/-/adapter-better-sqlite3-7.10.1.tgz#d9a15a007c399e3066907de1859a1e0e168a9d07"
+  integrity sha512-iD7UgO7/wSrslDdb0WvRSBS5v36KRCL3biTrCuGetbR/IIKL+PxyGgiZlfMyqY2yjAfS+tXWXkFVVkiESiXskQ==
   dependencies:
-    "@prisma/driver-adapter-utils" "7.10.0"
+    "@prisma/driver-adapter-utils" "7.10.1"
     better-sqlite3 "^12.6.0"
 
 "@prisma/client-runtime-utils@7.10.1":
@@ -157,11 +157,6 @@
     deepmerge-ts "8.0.2"
     effect "3.20.0"
     empathic "2.0.0"
-
-"@prisma/debug@7.10.0":
-  version "7.10.0"
-  resolved "https://registry.yarnpkg.com/@prisma/debug/-/debug-7.10.0.tgz#9ac8ed485699bd08978fe83f97a80993f30d4638"
-  integrity sha512-caygJKtltmRIgdJ3jRpkOr7yM4DW6zxo5uOmojKWFb3asnxWoRkQOwZmXBgD8FZp4htrX+nMpcWqDwzlQ1+Y4g==
 
 "@prisma/debug@7.10.1":
   version "7.10.1"
@@ -194,12 +189,12 @@
     valibot "1.4.2"
     zeptomatch "2.1.0"
 
-"@prisma/driver-adapter-utils@7.10.0":
-  version "7.10.0"
-  resolved "https://registry.yarnpkg.com/@prisma/driver-adapter-utils/-/driver-adapter-utils-7.10.0.tgz#c0a8480d48a86fb944f4ab6afff2d052a38beedc"
-  integrity sha512-u8zkcRLlaryO652T4qavBg0HmzNW5tSKdsCn6hc1PhWAp/J6k0vrxLuUs+b9o+HcjsK7Dfa01o4OFSn0frauJA==
+"@prisma/driver-adapter-utils@7.10.1":
+  version "7.10.1"
+  resolved "https://registry.yarnpkg.com/@prisma/driver-adapter-utils/-/driver-adapter-utils-7.10.1.tgz#72c9bc9f5a7489e15ca7aefd1c195643924d42a3"
+  integrity sha512-DJ4c6xvVnm3s9ZUyql9nCUicADSqyvH+CjXRCM9L6m5zJxCNmebCElG6X4irICq3rosBwlX+S19Dxq/4IrZk3A==
   dependencies:
-    "@prisma/debug" "7.10.0"
+    "@prisma/debug" "7.10.1"
 
 "@prisma/engines-version@8.1.0-1.d1b3f377ca835d73fd50954a5e22128b9ebdd6b8":
   version "8.1.0-1.d1b3f377ca835d73fd50954a5e22128b9ebdd6b8"
