@@ -748,10 +748,10 @@ ajv@^8.12.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
 
-amqplib@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-2.3.1.tgz#35eb724a08def521aa34cc4e115433e1bd8a7d70"
-  integrity sha512-0njHPLSE/xJUBeLWGgzniMuzTeyUt3o7WmAJobBlbSnvOTe9l5PxrlA+5iZW8spKteijDnkIZI81zAFV2Wzulw==
+amqplib@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-2.4.0.tgz#16841501b4d0a8fcb78ea9bdb1f68c8a4a2c019d"
+  integrity sha512-HNxvtv3etFqFNTJZlXCQLGljtxghyY7Wz9elG7qHMfj4O2Fdpd+XrQuJ+4NQ6M7+9NjGHNk5XncNsnb1nqIPYw==
 
 asynckit@^0.4.0:
   version "0.4.0"
